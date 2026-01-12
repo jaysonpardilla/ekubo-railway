@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    {% include 'chat/head.html' %}
+    {% block title %}
+    {% endblock title %}
+</head>
+<body style="background-color: #EDEBE2">
+    
+    {% include 'chat/navbar.html' %}
+
+    {% block content %}
+
+    
+    {% endblock %}
+
+    {% block footer %}
+        {% include 'chat/footer.html' %}
+    {% endblock %}
+    <!-- Bootstrap 5 CSS -->
+
+</body>
+</html>

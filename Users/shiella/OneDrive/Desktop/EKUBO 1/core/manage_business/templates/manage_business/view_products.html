@@ -1,0 +1,48 @@
+{% extends 'chat/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* Fixed-size products container with scroll */
+  .products-container { max-height: 620px; overflow-y: auto; }
+  /* Each product card has a consistent height */
+  .product-card { height: 320px; display: flex; flex-direction: column; }
+  /* Make images fill the top area and crop neatly */
+  .product-img { width: 100%; height: 180px; object-fit: cover; }
+  /* Ensure card body grows to fill remaining space */
+  .product-card .card-body { flex: 1 1 auto; }
+  /* Semi-transparent container card */
+  .semi-transparent { background-color: rgba(255,255,255,0.85); }
+</style>
+
+<div class="container py-4">
+  <div class="card shadow-sm semi-transparent">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">My Products</h5>
+      <div>
+        <!-- optional actions could go here -->
+      </div>
+    </div>
+    <div class="card-body products-container">
+      <div class="row g-3">
+        {% for product in products %}
+          <div class="col-6 col-md-3">
+            <div class="card h-100 product-card">
+              {% if product.product_image_url %}
+                <img src="{{ product.product_image_url }}" class="card-img-top product-img" alt="{{ product.product_name }}">
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ product.product_name }}</h6>
+                <p class="card-text mb-0">Price: <strong>{{ product.product_price }}</strong></p>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12">
+            <div class="alert alert-info mb-0">No products found.</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+@keyframes slideUp {
+    from {
+      transform: translateY(50px);  /* Start position (below the viewport) */
+      opacity: 0;  /* Invisible at the start */
+    }
+    to {
+      transform: translateY(0);  /* End position (in normal place) */
+      opacity: 1;  /* Fully visible at the end */
+    }
+  }
+  
+  .slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+    opacity: 0;  /* Start as invisible */
+    transform: translateY(50px);  /* Start slightly below the viewport */
+  }
+  

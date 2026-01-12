@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E-Kubo: Add new product</title>
+    <link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+    <style>
+        input[type="file"] {
+            display: block !important;
+        }
+        /* Make all form controls full width */
+        #productForm input,
+        #productForm select,
+        #productForm textarea {
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+        /* Wider card and centered */
+        .product-card-wrapper .card {
+            max-width: 40%;
+            margin: 0 auto;
+        }
+        .img-thumbnail {
+            max-width: 260px;
+        }
+        /* Limit description to 2 lines */
+        #productForm textarea[name="product_description"] {
+            min-height: 50px;
+            max-height: 80px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+    </style>
+  </head>
+  <body>
+
+  <div class="container mt-4 slide-up product-card-wrapper">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-lg p-4" style="font-family: 'Arial', sans-serif;">
+          <h4 class="text-center mb-4" style="font-family: 'Arial', sans-serif;">Add New Product</h4>
+          <form method="POST" enctype="multipart/form-data" id="productForm" style="font-family: 'Arial', sans-serif;">
+              {% csrf_token %}
+              <div class="mb-3">
+                  <label class="form-label">Product Name</label>
+                  {{ form.product_name }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Category</label>
+                  {{ form.product_category }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Measurement</label>
+                  {{ form.product_measurement }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Description</label>
+                  {{ form.product_description }}
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label">Price</label>
+                      {{ form.product_price }}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label">Stock</label>
+                      {{ form.product_stock }}
+                  </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Main Image</label>
+                  {{ form.product_image }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Additional Image 1</label>
+                  {{ form.product_image1 }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Additional Image 2</label>
+                  {{ form.product_image2 }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Additional Image 3</label>
+                  {{ form.product_image3 }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Additional Image 4</label>
+                  {{ form.product_image4 }}
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Add Product</button>
+          </form>
+      </div>
+      </div>
+      <div class="col-md-6"></div>
+  </div>
+  <div class="mb-5"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/slideup.js' %}"></script>
+  <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          function previewImage(input, previewElement) {
+              if (input.files && input.files[0]) {
+                  let reader = new FileReader();
+                  reader.onload = function(e) {
+                      previewElement.src = e.target.result;
+                      previewElement.style.display = 'block';
+                  };
+                  reader.readAsDataURL(input.files[0]);
+              }
+          }
+          
+          var el = document.querySelector("#id_product_image");
+          if(el) el.addEventListener("change", function() { previewImage(this, document.querySelector("#imagePreview")); });
+          el = document.querySelector("#id_product_image1");
+          if(el) el.addEventListener("change", function() { previewImage(this, document.querySelector("#imagePreview1")); });
+          el = document.querySelector("#id_product_image2");
+          if(el) el.addEventListener("change", function() { previewImage(this, document.querySelector("#imagePreview2")); });
+          el = document.querySelector("#id_product_image3");
+          if(el) el.addEventListener("change", function() { previewImage(this, document.querySelector("#imagePreview3")); });
+          el = document.querySelector("#id_product_image4");
+          if(el) el.addEventListener("change", function() { previewImage(this, document.querySelector("#imagePreview4")); });
+      });
+  </script>
+
+  </body>
+  </html>
+
+
+

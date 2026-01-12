@@ -1,0 +1,184 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+  }
+
+  .login-container {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Left Side */
+  .form-section {
+    flex: 1;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #ffffff 50%, #f9f9f9);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .form-section img.top-left {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 120px;
+    height: 200px;
+  }
+
+  h1 { 
+    position: absolute; 
+    top: 20px;
+    left: 80px;
+    font-family: 'Itim', cursive;
+  }
+
+  .create-account{
+      font-family: 'Itim', cursive;
+  }
+
+  .form-section img.bottom-right {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 140px;
+    height: 100px;
+  }
+
+  .form-section h1 {
+    font-size: 2.5rem;
+    color: #3cb371;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-section h3 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #666;
+  }
+
+  .form-section .form-control {
+    border-radius: 30px;
+    border: 1px solid #ddd;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-section .form-control:focus {
+    border-color: #3cb371;
+    box-shadow: 0px 0px 5px rgba(60, 179, 113, 0.5);
+  }
+
+  .form-section .btn {
+    background: linear-gradient(to right, #3cb371, #a8e063);
+    color: #fff;
+    border-radius: 30px;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .form-section .btn:hover {
+    background: linear-gradient(to right, #2e8b57, #7ccd32);
+    box-shadow: 0px 4px 10px rgba(60, 179, 113, 0.3);
+  }
+
+  .form-section a {
+    color: #3cb371;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .form-section a:hover {
+    text-decoration: underline;
+  }
+
+  .social-login img {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    margin: 0 0.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .social-login img:hover {
+    transform: scale(1.1);
+  }
+
+  /* Password toggle styles */
+  .password-toggle-container {
+    position: relative;
+  }
+
+  .password-toggle-container .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .password-toggle-container .toggle-password img {
+    width: 20px;
+    height: 20px;
+  }
+  .formss {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 2rem;
+width: 80%; /* Adjust width as needed */
+margin: 0 auto; /* Center horizontally */
+}
+
+.div-form {
+width: 100%; /* Ensure inputs stretch within the container */
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.div-form label {
+width: 70%;
+text-align: left;
+margin-bottom: 0.5rem;
+color: #fff; /* White text color for better visibility */
+}
+
+.div-form input {
+width: 70%;
+margin-bottom: 1rem;
+}
+
+.submit-btn {
+width: 70%;
+margin-top: 1rem;
+}
+
+label{
+  color: #666;
+}
+form input{
+  height: 40px;
+}
+.submit-btn{
+  height: 40px;
+}

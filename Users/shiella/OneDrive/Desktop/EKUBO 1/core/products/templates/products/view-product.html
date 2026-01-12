@@ -1,0 +1,437 @@
+{% extends 'chat/base.html' %}
+{% load static custom_filters %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}
+   <title>E-Kubo: View product</title>
+{% endblock title %}
+<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+{% block content %}
+<style>
+  /* Page background matches homepage */
+  body { background-color: #EDEBE2; }
+
+  /* Wishlist button - consistent with home/shop styles */
+  .wishlist-button {
+     background: transparent;
+     border: 2px solid #ff4d4d;
+     cursor: pointer;
+     font-size: 14px;
+     color: #ff4d4d;
+     border-radius: 50%;
+     width: 34px;
+     height: 34px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     margin-top: 5px;
+  }
+  .wishlist-button:hover { background: rgba(255,77,77,0.08); }
+  .wishlist-button.in-wishlist { background: transparent; border-color: #ff4d4d; color: #ff4d4d; }
+  .wishlist-button.in-wishlist i { color: #ff4d4d; }
+  .bi-heart-fill { fill: currentColor; }
+
+  /* Center product detail layout */
+  .product-row { align-items: center; }
+
+  /* Main image container: fixed height so image won't change layout
+     Background visible, non-repeating, image centered contained inside */
+  .product .zoom {
+     height: 360px; /* fixed visual height */
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     background-size: contain;
+     background-position: center;
+     background-repeat: no-repeat; /* prevent repeating */
+     background-color: #FBF3DDBC; /* image background */
+     border-radius: 8px;
+     padding: 12px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+     overflow: hidden;
+  }
+  .product .zoom img {
+     max-height: 100%;
+     max-width: 100%;
+     width: auto;
+     height: auto;
+     display: block;
+     margin: 0 auto;
+     object-fit: contain;
+  }
+
+     /* Custom buy button colors */
+   .btn-buy {
+      background-color: #3EB489 !important;
+      border-color: #3EB489 !important;
+      color: #000 !important;
+   }
+   .btn-buy:hover {
+      background-color: #44FFBB !important;
+      border-color: #44FFBB !important;
+      color: #000 !important;
+   }
+
+  /* Thumbnails: smaller and centered vertically */
+  .product-tools .thumbnails { display:flex; gap:10px; justify-content:center; align-items:center; }
+  .thumbnails-img img { width: 60px; height: 60px; object-fit: cover; display:block; margin: 0 auto; border-radius:6px; }
+  .thumbnails-img { cursor: pointer; }
+  .thumbnails-img.selected { outline: 2px solid #3EB489; border-radius:6px; }
+
+  /* Slight spacing for details */
+  .product-info { display:flex; flex-direction:column; justify-content:center; height:100%; }
+   /* Rating stars in modal */
+   .rating input { display: none; }
+   .rating label { color: #ddd; cursor: pointer; padding: 0 4px; }
+   .rating label:hover,
+   .rating label:hover ~ label { color: #ffc107; }
+   .rating input:checked ~ label { color: #ffc107; }
+</style>
+<main>
+    <section class="mt-8 slide-up">
+       <div class="container slide-up">
+          <div class="row slide-up">
+            <a href="{% url 'chat:home' %}" style="font-family: 'Arial', sans-serif; margin-bottom: 5px; text-decoration: none; color: black;">
+               <img style="width: 15px; height: 15px;" src="{% static 'icons/back.png' %}" alt=""><span>back</span>
+             </a>
+             <div class="col-md-5 col-xl-6" style="font-family: 'Arial', sans-serif;">
+                <div class="product" id="product">
+                   <div class="zoom" onmousemove="zoom(event)" style="background-image: url({{single_product.product_image_url}})">
+                      <img src="{{single_product.product_image_url}}" alt="" />
+                   </div>
+                </div>
+                <div class="product-tools">
+                   <div class="thumbnails" id="productThumbnails">
+                      <div class="thumbnails-img">
+                         <img src="{{single_product.product_image_url}}" alt="" />
+                      </div>
+                      <div class="thumbnails-img">
+                         <img src="{{single_product.product1_image_url}}" alt="" />
+                      </div>
+                      <div class="thumbnails-img">
+                         <img src="{{single_product.product2_image_url}}" alt="" />
+                      </div>
+                      <div class="thumbnails-img">
+                         <img src="{{single_product.product3_image_url}}" alt="" />
+                      </div>
+                   </div>
+                </div>
+             </div>
+             
+             <div class="col-md-7 col-xl-6">
+               <div class="mt-3 row justify-content-start g-2 align-items-center product-row" style="font-family: 'Arial', sans-serif;">
+                  <div class="col-md-4 text-start product-info" style="font-family: 'Arial', sans-serif;">
+                      <h4 style="font-size: 25px; margin-top: 0px;">{{ single_product.product_name | title }}</h4>
+                      <p>Category: {{ single_product.product_category | title }}</p>
+                      <p>Average Rating: {{ average_rating|floatformat:1 }}</p>              
+                      <p>Stock: {{single_product.product_stock}}</p>
+                      <hr>
+                      <div class="d-flex align-items-center">
+                        <p style="font-size: 20px; margin-bottom: 0;">₱{{ single_product.product_price }}</p>
+                        <p class="ms-2">Per {{ single_product.product_measurement }}</p>
+                    </div>
+                    
+                           <div>
+                          <div class="mt-3 row justify-content-start g-2 align-items-center">
+                           <div class="col-xxl-4 col-lg-4 col-md-5 col-5 d-grid">
+                              <form action="{% url 'products:add_to_wishlist' single_product.id %}" method="POST">
+                                 {% csrf_token %}
+                                 {% if single_product|in_wishlist:request.user %}
+                                    <button type="submit" class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                       <i class="bi bi-heart-fill"></i>
+                                    </button>
+                                 {% else %}
+                                    <button type="submit" class="wishlist-button" title="Add to wishlist">
+                                       <i class="bi bi-heart"></i>
+                                    </button>
+                                 {% endif %}
+                             </form>
+                           </div>
+                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <div class="col-md-4 col-4">
+                              <form action="{% url 'products:order_details' single_product.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button style="font-size:15px; padding-left: 1px; padding-right: 1px;" type="submit" disabled class="btn btn-success px-4">Buy Now</button>
+                             </form>
+                           </div>
+                           {% else %}
+                           <div class="col-md-4 col-4">
+                              <form action="{% url 'products:order_details' single_product.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button style="font-size:15px; padding-left: 1px; padding-right: 1px;" type="submit" class="btn btn-success px-4">Buy Now</button>
+                             </form>
+                           </div>
+                           {% endif %}
+                        </div>
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}" class="text-primary">Profile</a> to buy this product.</p>
+                        {% endif %}   
+                      </div>
+                  </div>
+              </div>
+              
+           </div>
+           
+         </div>
+       </div>
+    </section>
+    <section class="mt-lg-14 mt-3">
+       <div class="container">
+          <div class="row">
+             <div class="col-md-12">
+                <ul class="nav nav-pills nav-lb-tab" id="myTab" role="tablist">
+                   <!-- nav item -->
+                   <li class="nav-item" role="presentation" style="font-family: 'Arial', sans-serif;">
+                      <!-- btn -->
+                      <button
+                         class="nav-link"
+                         id="details-tab"
+                         data-bs-toggle="tab"
+                         data-bs-target="#details-tab-pane"
+                         type="button"
+                         role="tab"
+                         aria-controls="details-tab-pane"
+                         aria-selected="false">
+                         Seller Information
+                      </button>
+                   </li>
+                   <!-- nav item -->
+                   <li class="nav-item" role="presentation" style="font-family: 'Arial', sans-serif;">
+                      <!-- btn -->
+                      <button
+                         class="nav-link"
+                         id="reviews-tab"
+                         data-bs-toggle="tab"
+                         data-bs-target="#reviews-tab-pane"
+                         type="button"
+                         role="tab"
+                         aria-controls="reviews-tab-pane"
+                         aria-selected="false">
+                         Reviews
+                      </button>
+                   </li> 
+                   <hr>
+                  
+                </ul>
+                <!-- tab content -->
+                <div class="tab-content" id="myTabContent">
+                   <!-- tab pane -->
+                   <div class="tab-pane fade" id="details-tab-pane" role="tabpanel" aria-labelledby="details-tab" tabindex="0">
+                      <div class="my-8">
+                         <div class="row" style="font-family: 'Arial', sans-serif;">
+                            <div class="col-12">
+                               <h6><b>Name:</b> {{single_product.seller.user.first_name}} {{single_product.seller.user.last_name}}</h6>
+                               <h6><b>Phone:</b> 0{{single_product.seller.user.phone}}</h6>
+                               <h6><b>Business name:</b> {{ single_product.seller.business_name }}</h6>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                   <!-- tab pane -->
+                   <div class="tab-pane fade" id="reviews-tab-pane" role="tabpanel" aria-labelledby="reviews-tab" tabindex="0">
+                      <div class="my-8">
+                         <!-- row -->
+                         <div class="d-flex align-items-center container" style="font-family: 'Arial', sans-serif;">
+                           <h6 class="mb-2"><b>Latest reviews</b></h6>
+                           {% if user.is_authenticated %}
+                               {% if not user_has_reviewed %}
+                                   <button type="button" class="btn btn-outline-dark p-1" style="margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#reviewModal"><small>Leave a Review</small> </button>
+                               {% endif %}
+                           {% else %}
+                               <p class="mb-0">You need to be logged in to leave a review.</p>
+                           {% endif %}
+                       </div>
+                       <div class="container mt-0">
+                           {% if reviews %}
+                               <div class="review-container mt-0">
+                                 <div class="d-flex flex-wrap justify-content-between">
+                                     {% for review in reviews|slice:":3" %}
+                                         <div class="review-card p-3 shadow rounded" style="flex: 1; min-width: 300px; max-width: 32%; background: #fff;">
+                                              <div class="d-flex align-items-center mb-2">
+                                              <img src="{{ review.user.profile.profile.url }}" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                              <div style="font-family: 'Arial', sans-serif;">
+                                                 <h6 class="mb-0"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b></h6>
+                                                 <div>
+                                                    {% comment %} Render filled stars up to rating, outline for remainder {% endcomment %}
+                                                    {% for _ in "12345" %}
+                                                       {% if forloop.counter <= review.rating %}
+                                                          <i class="fas fa-star text-warning"></i>
+                                                       {% else %}
+                                                          <i class="far fa-star text-muted"></i>
+                                                       {% endif %}
+                                                    {% endfor %}
+                                                 </div>
+                                              </div>
+                                           </div>
+                                             <p class="text-muted" style="font-size: 14px;">{{ review.comment }}</p>
+                                             <small class="text-muted">Reviewed on: {{ review.created_at|date:"F j, Y - g:i A" }}</small>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                             </div>                             
+
+                           {% else %}
+                               <p class="text-center" style="font-family: 'Arial', sans-serif;">No reviews yet for this product.</p>
+                           {% endif %}
+                       </div>
+                       
+                        <div class="modal fade" id="reviewModal" tabindex="-1">
+                           <div class="modal-dialog">
+                              <div class="modal-content" style="font-family: 'Arial', sans-serif;">
+                                 <div class="modal-header">
+                                    <h5 class="modal-title text-center">Add a Review</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                 </div>
+                                 <div class="modal-body">
+                                    <form method="post">
+                                       {% csrf_token %}
+                                       <div class="mb-3">
+                                          <label class="form-label">Rating</label>
+                                          <div class="rating" style="direction: rtl; font-size: 1.5rem;">
+                                             <input type="radio" id="star5" name="rating" value="5" required>
+                                             <label for="star5" title="5 stars">★</label>
+                                             <input type="radio" id="star4" name="rating" value="4">
+                                             <label for="star4" title="4 stars">★</label>
+                                             <input type="radio" id="star3" name="rating" value="3">
+                                             <label for="star3" title="3 stars">★</label>
+                                             <input type="radio" id="star2" name="rating" value="2">
+                                             <label for="star2" title="2 stars">★</label>
+                                             <input type="radio" id="star1" name="rating" value="1">
+                                             <label for="star1" title="1 star">★</label>
+                                          </div>
+                                       </div>
+                                       <div class="mb-3">
+                                          <label class="form-label">Comment</label>
+                                          <textarea name="comment" class="form-control" rows="4" placeholder="Write your review..." required></textarea>
+                                       </div>
+                                       <div class="d-grid">
+                                          <button type="submit" class="btn btn-primary">Submit Review</button>
+                                       </div>
+                                    </form>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                      </div>
+                   </div>
+                   <!-- tab pane -->
+                   <div class="tab-pane fade" id="sellerInfo-tab-pane" role="tabpanel" aria-labelledby="sellerInfo-tab" tabindex="0">...</div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </section>
+
+    <!-- section -->
+    <section class="my-lg-14 my-4">
+       <div class="container">
+          <!-- row -->
+          <div class="row">
+             <div class="col-12" style="font-family: 'Arial', sans-serif;">
+                <!-- heading -->
+                <h5>Related Products</h5>
+             </div>
+          </div>
+          <!-- row -->
+          <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3 mt-2" style="font-family: 'Arial', sans-serif;">
+                {% if related_product %}
+                  {% for products in related_product %}
+                  <div class="col">
+                     <div class="card card-product" style="background-color: #FBF3DDBC;">
+                        <div class="card-body">
+                           <div class="text-center position-relative">
+                              <div class="position-absolute top-0 start-0">
+                                 <div class="availability">
+                                    {% if products.product_stock >= 1 %}
+                                       <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                                    {% else %}
+                                       <small>unavailable</small>
+                                    {% endif %}
+                                 </div>
+                                 <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if products|in_wishlist:request.user %}
+                                       <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                          <i class="bi bi-heart-fill"></i>
+                                       </button>
+                                    {% else %}
+                                       <button class="wishlist-button" title="Add to wishlist">
+                                          <i class="bi bi-heart"></i>
+                                       </button>
+                                    {% endif %}
+                                 </form>
+                              </div>
+                              <a href="{% url 'products:view_product' products.id %}">
+                                 <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                              </a>
+                           </div>
+                           <h2 class="fs-6"><a href="{% url 'products:view_product' products.id %}" class="text-inherit text-decoration-none">{{products.product_name|title}}</a></h2>
+                           <div class="d-flex justify-content-between align-items-center mt-3">
+                              <div>
+                                 <span class="text-dark mb-0 mt-0"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
+                              </div>
+                              {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                                 <div>
+                                    <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                       {% csrf_token %}
+                                       <button type="submit" class="btn btn-buy text-dark by-button pt-0 mb-0" disabled><h6 class=" p-0">Buy</h6></button>
+                                    </form>
+                                 </div>
+                              {% else %}
+                                 <div>
+                                    <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                       {% csrf_token %}
+                                       <button type="submit" class="btn btn-buy text-dark by-button pt-0 mb-0"><h6 class="p-0">Buy</h6></button>
+                                    </form>
+                                 </div>
+                              {% endif %}
+                           </div>
+                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                              <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}" class="text-primary">Profile</a> to buy this product.</p>
+                           {% endif %}
+                        </div>
+                     </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <p style="font-family: 'Arial', sans-serif; text-align: center;">No related products</p>
+                {% endif %}
+          </div>
+       </div>
+    </section>
+ </main>
+ <script src="{% static 'js/slideup.js' %}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+   const thumbnails = document.querySelectorAll('.thumbnails-img img');
+   const zoomDiv = document.querySelector('.product .zoom');
+   const mainImg = document.querySelector('.product .zoom img');
+   if(!thumbnails || thumbnails.length === 0) return;
+   thumbnails.forEach(img => {
+      img.addEventListener('click', function(e){
+         const src = e.currentTarget.getAttribute('src');
+         if(!src) return;
+         // update main image src and zoom background
+         mainImg.setAttribute('src', src);
+         zoomDiv.style.backgroundImage = `url('${src}')`;
+         // update selected state
+         document.querySelectorAll('.thumbnails-img').forEach(t => t.classList.remove('selected'));
+         e.currentTarget.parentElement.classList.add('selected');
+      });
+   });
+   // initialize background from main image
+   if(mainImg && zoomDiv && mainImg.src){
+      zoomDiv.style.backgroundImage = `url('${mainImg.src}')`;
+   }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+

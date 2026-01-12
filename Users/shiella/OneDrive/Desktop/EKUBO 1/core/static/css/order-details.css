@@ -1,0 +1,76 @@
+/* Apply responsiveness for screens between 420px and 768px */
+@media (min-width: 420px) and (max-width: 768px) {
+    /* Center the order summary */
+    .container {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    /* Adjust the margin for the main title */
+    h3 {
+        text-align: center;
+        margin-left: 0;
+    }
+
+    /* Modify the outline and padding of the order section */
+    .col-md-8 {
+        padding: 15px;
+        outline: none;
+        border-radius: 10px;
+    }
+
+    /* Make the table more compact */
+    .table {
+        font-size: 14px;
+    }
+
+    /* Reduce the font size and margin of product details */
+    .user-details p {
+        font-size: 14px;
+    }
+
+    /* Adjust the input field size */
+    input[type="number"] {
+        width: 100%;
+    }
+
+    /* Position the message seller button properly */
+    a {
+        display: inline-block;
+        padding: 10px;
+        text-align: center;
+        margin-top: 10px;
+        width: 100%;
+        background-color: rgb(43, 255, 0);
+        border-radius: 3px;
+    }
+
+    /* Ensure checkout button is centered at the bottom */
+    button {
+        position: relative;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    /* Make the message seller link larger */
+    a p {
+        margin: 0;
+        font-size: 14px;
+    }
+}
+
+/* Optional: Adjust the layout for very small screens (less than 420px) */
+@media (max-width: 420px) {
+    .col-md-8 {
+        padding: 10px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .table th, .table td {
+        font-size: 12px;
+    }
+}

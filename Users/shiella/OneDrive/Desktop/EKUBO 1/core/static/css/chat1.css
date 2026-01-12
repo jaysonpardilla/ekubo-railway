@@ -1,0 +1,146 @@
+body{
+    margin: 0;
+}
+.row {
+    margin: 0;
+}
+.sidebar {
+    background-color: rgb(21, 21, 21);
+    color: white;
+    height: 87vh;
+    padding: 20px;
+    overflow-y: auto;
+    border-radius: 10px;
+    margin: 0;
+}
+.sidebar h2 {
+    color: #ffc107;
+    text-align: center;
+}
+.sidebar ul li {
+    list-style: none;
+    margin-bottom: 15px;
+}
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 100%;
+}
+.sidebar ul li a:hover {
+    background-color: rgba(255, 193, 7, 0.2);
+}
+.sidebar ul li a h6 {
+    margin: 0;
+}
+.sidebar ul li a .last-message {
+    font-size: 0.85em;
+    color: #ccc;
+}
+.chat-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    height: 70vh; 
+    width: 100%;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 10px;
+}
+.chat-container .one-message {
+    margin-bottom: 10px;
+}
+.chat-sender {
+    background-color: #e0e0e0;
+    text-align: left;
+    float: right; /* Aligns messages to the right */
+    clear: both;
+}
+
+.chat-receiver {
+    background-color: #d1f7c4;
+    text-align: left;
+    float: left; /* Aligns messages to the left */
+    clear: both;
+}
+
+.chat-container .chat-message-sender,
+.chat-container .chat-message-receiver {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.chat-message-sender {
+    justify-content: flex-end; /* Aligns content to the right */
+}
+
+.chat-message-receiver {
+    justify-content: flex-start; /* Aligns content to the left */
+}
+
+.chat-message-sender img,
+.chat-message-receiver img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.username{
+    border-bottom: 1px solid #ccc;
+    background-color: white;
+    padding: 2px;
+    padding-left: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+textarea {
+    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    transition: box-shadow 0.3s;
+}
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+}
+.message-form {
+    display: flex;
+    align-items: center; 
+    gap: 10px; 
+}
+.message-form textarea {
+    flex: 1; 
+    resize: none; 
+    width: 100%;
+}
+.message-form button {
+    white-space: nowrap; 
+}
+.date {
+    display: block; 
+    text-align: center;
+    margin-bottom: 5px; /* Add some space between the date and the message */
+    font-size: 10px;
+    color: #666; /* Make the date slightly less prominent */
+}
+.chat{
+    align-items: start;
+    justify-content: left;
+}
+body, html {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    max-width: 100%; /* Prevent elements from exceeding the viewport width */
+}
+.content{
+    justify-content: center;
+    align-items: center;
+}

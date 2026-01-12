@@ -1,0 +1,36 @@
+<tr id="order-row-{{ order.id }}" class="tr">
+  <td class="text-center">
+     <p>
+        <a href="{% url 'chat:chat_with' order.buyer.id %}">
+          {{ order.buyer.first_name }} {{ order.buyer.last_name }}
+        </a>
+     </p>
+     <p>Address: {{ order.buyer.profile.municipality }}</p>
+     <p>Street: {{ order.buyer.profile.street }}</p>
+     <p>Postal Code: {{ order.buyer.profile.postal_code }}</p>
+  </td>
+  <td class="text-center">
+     <img src="{{ order.product.product_image_url }}" alt="Product Image" 
+          style="max-width: 80px; height: auto; display: block; margin: auto;">
+     <p>{{ order.product.product_name }}</p>
+  </td>
+  <td class="text-center">{{ order.order_quantity }}</td>
+  <td class="text-center">{{ order.created_at }}</td>
+  <td class="text-center">
+     <p><strong>Status:</strong> {{ order.status }}</p>
+     {% if order.status == "Pending" %}
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+           <form action="{% url 'manage_business:accept_order' order.id %}" method="post" class="ajax-order-action">
+              {% csrf_token %}
+              <button type="submit" class="accept-btn">Accept</button>
+           </form>
+           <form action="{% url 'manage_business:reject_order' order.id %}" method="post" class="ajax-order-action">
+              {% csrf_token %}
+              <button type="submit" class="reject-btn">Reject</button>
+           </form>
+        </div>
+     {% else %}
+        <p><strong>Action Taken:</strong> {{ order.status }}</p>
+     {% endif %}
+  </td>
+</tr>

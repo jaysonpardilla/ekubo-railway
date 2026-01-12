@@ -1,0 +1,161 @@
+
+body{
+   background-color:#EDEBE2
+}
+.product-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 250px; /* Ensures consistent height */
+   }
+   .product-image {
+      width: 100% !important;
+      max-width: 150px !important;
+      min-height: 150px !important;
+      max-height: 200px !important;
+      object-fit: contain !important;
+      display: block;
+      margin: auto;
+   }
+
+.why-choose-us-card{
+   background-color: #FBF3DDBC;
+}
+
+   .card-body{
+   background-color: #F3EBD098;
+   }
+   .buy-button{
+   align-items: center;
+   justify-content: center;
+   }
+    .wishlist-button {
+      background: transparent;
+      border: 2px solid #ff4d4d;
+      cursor: pointer;
+      font-size: 14px;
+      color: #ff4d4d;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 5px;
+    }   
+   .wishlist-button:hover {
+      background: rgba(255,77,77,0.08);
+   }
+   /* Active (in wishlist): show filled red heart (no solid button background) */
+   .wishlist-button.in-wishlist {
+      background: transparent;
+      border-color: #ff4d4d;
+      color: #ff4d4d;
+   }
+   .wishlist-button.in-wishlist i{
+      color: #ff4d4d;
+   }
+   /* Ensure filled heart icons use the current color as fill */
+   .bi-heart-fill {
+      fill: currentColor;
+   }
+   /* Custom buy button colors */
+   .btn-buy {
+      background-color: #3EB489 !important;
+      border-color: #3EB489 !important;
+      color: #000 !important;
+   }
+   .btn-buy:hover {
+      background-color: #44FFBB !important;
+      border-color: #44FFBB !important;
+      color: #000 !important;
+   }
+    .availability {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .category-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 15px;
+        background-color: #FBF3DDBC;
+        border-radius: 15px;
+        height: 230px;
+    }
+    .category-slider-wrapper {
+        overflow: hidden;
+        width: 100%;
+        padding: 10px 0;
+        position: relative;
+    }
+
+    .category-slider {
+        display: flex;
+        gap: 20px;
+        animation: scrollRight 60s linear infinite;
+        width: max-content;
+    }
+
+    .category-slider .category-card {
+        flex: 0 0 auto;
+        min-width: 160px;
+    }
+
+    .category-slider img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    /* Category card link - cover full space with hover zoom */
+    .category-card a {
+        display: block;
+        width: 100%;
+        height: 150px;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    .category-card a img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover !important;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+    .category-card a:hover img {
+        transform: scale(1.08);
+    }
+    @media (max-width: 720px) {
+      .messages_notification{
+         position: fixed; 
+         top: 10px;
+         z-index: 500; 
+         font-family: Arial, sans-serif;
+         left: 40%;
+      }
+    }
+
+lottie-player {
+    display: block;
+    margin: 0 auto; /* centers it */
+}
+
+
+/* Lottie fixed inside the banner */
+.banner-lottie {
+   position: relative;
+   bottom: 20px;   /* adjust as needed */
+   right: 20px;    /* adjust as needed */
+   width: 300px;
+   height: 300px;
+   pointer-events: none; /* allows clicks to pass through */
+}
+
+@keyframes scrollRight {
+   0% { transform: translateX(0); }
+   100% { transform: translateX(-50%); }
+}

@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refreshify Navbar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/libs/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="../assets/libs/feather-webfont/dist/feather-icons.css" rel="stylesheet" />
+    <link href="../assets/libs/simplebar/dist/simplebar.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/theme.min.css" />
+    <style>
+        .sidebars {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 300px;
+        height: 100%;
+        background: #fff;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: right 0.3s ease-in-out;
+        padding: 20px;
+        z-index: 1001;
+    }
+    .sidebars.active {
+        right: 0;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out;
+        z-index: 1000;
+    }
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .sidebars ul {
+        padding: 0;
+        list-style: none;
+    } 
+    .sidebars ul li {
+        margin: 15px 0;
+    }
+    .sidebars ul li a {
+        text-decoration: none;
+        color: #141414;
+        font-size: 18px;
+        display: flex;
+        align-items: center; 
+    }
+    .sidebars ul li a i {
+        margin-right: 10px;  
+        font-size: 20px; 
+    } 
+    
+    /* Change background color on hover */
+    .dropdown-menu .dropdown-item:hover {
+        background-color: rgb(31, 151, 69) !important;
+        color: white !important;
+    }
+
+    </style>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>  
+<body>
+    <nav class="navbar navbar-expand-lg px-3 shadow-sm" style="background-color: white; position: sticky; top: 0; z-index: 1030;">
+        <div class="container-fluid">
+            <!-- Logo -->
+            {% if request.user.business %}
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'manage_business:home' %}">
+                    <img src="../../../static/icons/logo1.png" alt="Refreshify Logo" width="80" height="70">
+                    <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
+                </a>
+            {% else %}
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'chat:home' %}">
+                    <img src="../../../static/icons/logo1.png" alt="Refreshify Logo" width="80" height="70">
+                    <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
+                </a>
+            {% endif %}
+
+            <!-- Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" id="navbar-toggler">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <!-- Navbar Items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if request.user.business %}
+                    {% else %}
+                    <li class="nav-item dropdown" style="font-family: 'Arial', sans-serif;">
+                        <a class="nav-link" href="{% url 'shops:shops_list' %}"  aria-expanded="false">
+                            Stores
+                        </a>
+                    </li>  
+                    <li><a class="dropdown-item text-secondary mr-2 ml-2" href="{% url 'chat:about' %}">About us</a></li>
+                    <!-- Pages Dropdown -->
+                    <!-- <li class="nav-item dropdown" style="font-family: 'Arial', sans-serif;"> 
+                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-bs-toggle="dropdown">Pages</a>
+                        
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Contact us</a></li>
+                            <li><a class="dropdown-item" href="{% url 'chat:about' %}">About us</a></li>
+                        </ul>
+                    </li> -->
+                    {% endif %}
+
+                    <!-- Notification -->
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'chat:buyer_notification' %}" id="notification-link">
+                            <img src="../../../static/icons/not.png" width="25" height="25" alt="Notifications">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-count">0</span>
+                        </a>
+                    </li>
+    
+                    <!-- Messages -->
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'chat:chat_dashboard' %}" id="message-link">
+                            <i class="fab fa-facebook-messenger fs-5"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="message-count">0</span>
+                        </a>
+                    </li>
+    
+                    <!-- Profile -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'chat:profile_detail' %}">
+                            <i class="bi bi-person-circle fs-4"></i>
+                        </a>
+                    </li>
+                </ul>
+                    {% if request.user.business %}
+                    {% else %}
+                        <form method="GET" action="{% url 'chat:home' %}" class="d-flex ms-3">
+                            <input class="form-control" type="search" name="q" placeholder="Search for products..." aria-label="Search"
+                                style="height: 45px;">
+                            <button class="btn btn-success" type="submit" style="height: 45px; font-family: Arial, sans-serif;">Search</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                <div class="d-flex w-100 justify-content-between align-items-center" style="font-family: 'Arial', sans-serif;"> 
+                    <form method="GET" action="{% url 'chat:home' %}" class="d-flex ms-3">
+                        <input class="form-control" type="search" name="q" placeholder="Search for products..." aria-label="Search"
+                            style="height: 45px; width: 500px;">
+                        <button class="btn btn-success" type="submit" style="height: 45px;">Search</button>
+                    </form>
+                    <div class="ms-auto">
+                        <a href="{% url 'chat:login' %}">
+                            <button style="border-radius: 20px;" type="submit">Sign in</button>
+                        </a>
+                    </div>
+                </div>
+                
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const navbarToggler = document.getElementById("navbar-toggler");
+            const navbarNav = document.getElementById("navbarNav");
+
+            navbarToggler.addEventListener("click", function () {
+                navbarNav.classList.toggle("show");
+            });
+
+            // Close navbar when clicking outside
+            document.addEventListener("click", function (event) {
+                if (!navbarNav.contains(event.target) && !navbarToggler.contains(event.target)) {
+                    navbarNav.classList.remove("show");
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const menuToggle = document.getElementById("menu-toggle");
+            menuToggle.addEventListener("click", function () {
+                sidebar.classList.add("active");
+                overlay.classList.add("active");
+            });
+            overlay.addEventListener("click", function () {
+                sidebar.classList.remove("active");
+                overlay.classList.remove("active");
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const notificationCountElement = document.getElementById("notification-count");
+            const notificationLink = document.getElementById("notification-link");
+
+            function fetchNotifications() {
+                fetch("{% url 'chat:get_notifications' %}") 
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.count > 0) {
+                            notificationCountElement.textContent = data.count;
+                        } else {
+                            notificationCountElement.textContent = "";
+                        }
+                    });
+            }
+
+            notificationLink.addEventListener("click", function () {
+                fetch("{% url 'chat:mark_notifications_read' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCSRFToken(),
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                }).then(() => {
+                    notificationCountElement.textContent = "";
+                });
+            });
+
+            function getCSRFToken() {
+                    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+                }
+
+                fetchNotifications();  // Load notifications on page load
+                setInterval(fetchNotifications, 10000);  // Fetch every 10 seconds
+            });
+
+
+
+
+            //for tracking if there is new message in messenger
+            document.addEventListener("DOMContentLoaded", function () {
+        const messageCountElement = document.getElementById("message-count");
+        const messageLink = document.getElementById("message-link");
+
+        function fetchUnreadMessages() {
+            fetch("{% url 'chat:get_unread_messages' %}") // Update with your actual URL name
+                .then(response => response.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        messageCountElement.textContent = data.count;
+                    } else {
+                        messageCountElement.textContent = "";
+                    }
+                });
+        }
+
+        messageLink.addEventListener("click", function () {
+            fetch("{% url 'chat:mark_messages_read' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            }).then(() => {
+                messageCountElement.textContent = "";
+            });
+        });
+
+        function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+        }
+
+        fetchUnreadMessages();  // Load unread messages count on page load
+        setInterval(fetchUnreadMessages, 10000);  // Fetch every 10 seconds
+    });
+
+    </script>
+    <!-- Bootstrap 5 CSS -->
+    <!-- Bootstrap 5 JS (Requires Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/simplebar/dist/simplebar.min.js"></script>
+    <script src="../assets/js/vendors/jquery.min.js"></script>
+    <script src="../assets/libs/slick-carousel/slick/slick.min.js"></script>
+    <script src="../assets/js/vendors/slick-slider.js"></script>
+    <script src="../assets/libs/tiny-slider/dist/min/tiny-slider.js"></script>
+    <script src="../assets/js/vendors/tns-slider.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+body {
+            background-color: #EDEBE2;
+            font-family: 'Arial', sans-serif;
+            color: #222;
+            padding: 1rem;
+        }
+
+        .form-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background-color: #F3EBD098;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-container h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #222;
+        }
+
+        /* Form field styling */
+        .form-container input,
+        .form-container textarea,
+        .form-container select {
+            width: 100% !important;
+            font-size: 0.95rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 0.6rem;
+            font-family: 'Arial', sans-serif;
+            box-sizing: border-box;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .form-container input:focus,
+        .form-container textarea:focus,
+        .form-container select:focus {
+            outline: none;
+            border-color: #3EB489;
+            box-shadow: 0 0 5px rgba(62, 180, 137, 0.2);
+        }
+
+        .form-container label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-container p {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background-color: #3EB489 !important;
+            color: #000 !important;
+            border: none !important;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.65rem 1.5rem;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #44FFBB !important;
+            color: #000 !important;
+        }
+
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #3EB489;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                min-height: 100vh;
+            }
+
+            .form-wrapper {
+                min-height: auto;
+                align-items: flex-start;
+                padding-top: 1rem;
+            }
+
+            .form-container {
+                margin-top: 0;
+            }
+        }

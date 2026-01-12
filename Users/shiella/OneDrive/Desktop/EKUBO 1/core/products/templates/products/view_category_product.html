@@ -1,0 +1,259 @@
+{% extends 'chat/base.html' %}
+{% load static custom_filters %}
+{% block title %}
+   <title>E-Kubo: {{category}} Category</title>
+{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+<style>
+   body {
+       background-color: #EDEBE2;
+   }
+   @media (min-width: 480px) and (max-width: 768px) {
+    .col {
+        flex: 0 0 50%; /* Each column takes 50% width */
+        max-width: 50%;
+    }
+}
+   .product-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 250px; /* Ensures consistent height */
+        background-color: #FBF3DDBC !important;
+        border: none;
+    }
+    .product-card .card-body {
+        background-color: #F3EBD098 !important;
+        width: 100%;
+    }
+    .product-image {
+        width: 100% !important;
+        max-width: 150px !important;
+        min-height: 150px !important;
+        max-height: 200px !important;
+        object-fit: contain !important;
+        display: block;
+        margin: auto;
+    }
+    .wishlist-button {
+        background: transparent;
+        border: 2px solid #ff4d4d;
+        cursor: pointer;
+        font-size: 14px;
+        color: #ff4d4d;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+    }
+    .wishlist-button:hover {
+        background: rgba(255, 77, 77, 0.08);
+    }
+    .wishlist-button.in-wishlist {
+        background: transparent;
+        color: #ff4d4d;
+    }
+    .availability {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .category-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        height: 230px;
+        
+    }
+    .category-slider {
+        animation: scrollSlider 1s infinite linear;
+        display: flex;
+        overflow-x: hidden;
+        gap: 15px;
+        scroll-behavior: smooth;
+        padding: 10px 0;
+        position: relative;
+    }
+    .category-slider .category-card {
+        flex: 0 0 auto;
+        width: 250px;
+    }
+    .category-slider img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        object-fit: contain !important;
+    }
+    /* Custom buy button colors */
+   .btn-buy {
+      background-color: #3EB489 !important;
+      border-color: #3EB489 !important;
+      color: #000 !important;
+   }
+   .btn-buy:hover {
+      background-color: #44FFBB !important;
+      border-color: #44FFBB !important;
+      color: #000 !important;
+   }
+    .card-body{
+   background-color: #F3EBD098;
+   }
+</style>
+<main>
+   <section class="mt-8">
+      <div class="container slide-up">
+         <div class="row">
+            <div class="col-12" style="font-family: 'Arial', sans-serif;">
+                <a href="{% url 'chat:home' %}" class="mb-3">
+                  <img style="width: 15px; height: 15px;" src="{% static 'icons/back.png' %}" alt=""><span>back</span>
+                </a>
+               <div class="bg-light d-flex justify-content-between ps-md-10 ps-6 rounded" style="font-family: 'Arial', sans-serif;">
+                  <div class="d-flex align-items-center">
+                     <h5 class="mb-0 fw-bold">{{ category.name|title }} Category</h5>
+                  </div>
+                  <div class="py-6">
+                     <img src="{% static 'images/svg-graphics/store-graphics.svg' %}" alt="" class="img-fluid" />
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- section -->
+   <section class="mt-8 mb-lg-14 mb-8">
+      <div class="container">
+         <!-- row -->
+         <div class="row">
+            <!-- col -->
+            <div class="col-12">
+               <div class="mb-3" style="font-family: 'Arial', sans-serif;">
+                  <!-- text -->
+                  <h6>
+                     {{category}} category has 
+                     <span class="text-primary">{{all_products}}</span>
+                     products now
+                  </h6>
+               </div>
+            </div>
+         </div>
+         <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3">
+            {% for products in products %}
+            <div class="col">
+               <div class="card card-product">
+                  <div class="card-body">
+                     <div class="text-center position-relative">
+                        <div class="position-absolute top-0 start-0" style="font-family: 'Arial', sans-serif;">
+                           <div class="availability">
+                                    {% if products.product_stock >= 1 %}
+                                       <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                                    {% else %}
+                                       <small>unavailable</small>
+                                    {% endif %}
+                                 </div>
+                           <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                              {% csrf_token %}
+                              {% if products|in_wishlist:request.user %}
+                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                    <i class="bi bi-heart-fill"></i>
+                                 </button>
+                              {% else %}
+                                 <button class="wishlist-button" title="Add to wishlist">
+                                    <i class="bi bi-heart"></i>
+                                 </button>
+                              {% endif %}
+                           </form>
+                        </div>
+                        <a href="{% url 'products:view_product' products.id %}">
+                           <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                        </a>
+                     </div>
+                     <h2 style="font-family: 'Arial', sans-serif;" class="fs-6"><a href="pages/shop-single.html" class="text-inherit text-decoration-none">{{products.product_name|title}}</a></h2>
+                     <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
+                        <div>
+                           <span class="text-dark">₱{{products.product_price}} Per {{products.product_measurement}}</span>
+                        </div>
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        <div>
+                           <form action="{% url 'products:order_details' products.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                           </form>
+                        </div>
+                     {% else %}
+                        <div>
+                           <form action="{% url 'products:order_details' products.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                           </form>
+                        </div>
+                     {% endif %}
+                     </div>
+                      {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                     <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}" class="text-primary">Profile</a> to buy this product.</p>
+                  {% endif %}
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+         </div>
+      </div>
+   </section>
+</main>
+<script src="{% static 'js/slideup.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
