@@ -1,0 +1,398 @@
+{% extends 'chat/base.html' %}
+{% load static %}
+{% block title %}
+   <title>E-Kubo: Dashboard</title>
+{% endblock title %}
+<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+{% block content %}
+<style>
+   @media (max-width: 768px) {
+      .row {
+         flex-direction: column;
+      }
+      .order-section, .product-section {
+         width: 100%;
+      }
+      .order-section {
+         margin-bottom: 20px;
+      }
+   }
+
+   /* Scrollable Table */
+   .table-responsive {
+      overflow-x: auto;
+   }
+
+   th, td {
+      text-align: left;
+      padding: 8px;
+      vertical-align: middle;
+      word-wrap: break-word;
+   }
+
+   img {
+      max-width: 80px;
+      height: auto;
+   }
+
+   /* Order section scrollable */
+   .order-section {
+      max-height: 600px;
+      overflow-y: auto; /* Add vertical scrolling */
+   }
+
+   /* Product section scrollable */
+   .product-section {
+      max-height: 600px; /* Set a fixed height */
+      overflow-y: auto;  /* Make it scrollable vertically */
+   }
+
+   /* Button Adjustments */
+   .accept-btn, .reject-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 100%; /* Full width for small screens */
+   }
+
+   .reject-btn {
+      background-color: #dc3545;
+   }
+
+   .accept-btn:hover {
+      background-color: #218838;
+   }
+
+   .reject-btn:hover {
+      background-color: #c82333;
+   }
+
+   .table_head { 
+      background-color: rgb(92, 184, 109);
+   }
+
+   .tr td {
+      background-color: beige;
+   }
+
+   /* Responsive Adjustments */
+   @media (max-width: 768px) {
+      th, td {
+         font-size: 14px;
+      }
+      .btn {
+         width: 100%;
+      }
+   }
+
+   @media (max-width: 420px) {
+      th, td {
+         font-size: 12px;
+      }
+   }
+</style>
+
+
+{% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 400px; padding: 0 1rem;">
+      {% for message in messages %}
+        <div class="toast show align-items-center text-white 
+          {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} 
+          border-0 mx-auto" role="alert" aria-live="assertive" aria-atomic="true"
+          style="font-family: 'Arial', sans-serif;">
+          <div class="d-flex">
+            <div class="toast-body text-center w-100">
+              {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+<!-- Dashboard summary cards -->
+<div class="row mb-1 slide-up">
+  <div class="col-12">
+    <div class="d-flex justify-content-center" style="background-color: #EDEBE2; padding: 18px; border-radius: 12px;">
+      <div class="d-flex flex-wrap justify-content-center align-items-center" style="gap:18px; max-width: 1100px;">
+        <a href="{% url 'manage_business:view_product' %}" class="text-decoration-none text-dark">
+          <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
+            <div class="card-body">
+              <div class="small text-muted">Total Products</div>
+              <div class="fs-4 my-2"><i class="bi bi-box-seam"></i></div>
+              <div id="card-total-products" class="h5 fw-bold">{{ total_products }}</div>
+            </div>
+          </div>
+        </a>
+
+        <a href="{% url 'manage_business:view_category' %}" class="text-decoration-none text-dark">
+          <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
+            <div class="card-body">
+              <div class="small text-muted">Total Categories</div>
+              <div class="fs-4 my-2"><i class="bi bi-tags"></i></div>
+              <div id="card-total-categories" class="h5 fw-bold">{{ total_categories }}</div>
+            </div>
+          </div>
+        </a>
+
+        <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
+          <div class="card-body">
+            <div class="small text-muted">Pending</div>
+            <div class="fs-4 my-2"><i class="bi bi-clock"></i></div>
+            <div id="card-pending-count" class="h5 fw-bold">{{ pending_count }}</div>
+          </div>
+        </div>
+
+            <a href="{% url 'manage_business:accepted_orders' %}" class="text-decoration-none text-dark">
+               <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
+                  <div class="card-body">
+                     <div class="small text-muted">Accepted</div>
+                     <div class="fs-4 my-2"><i class="bi bi-check-circle"></i></div>
+                     <div id="card-accepted-count" class="h5 fw-bold">{{ accepted_count }}</div>
+                  </div>
+               </div>
+            </a>
+
+            <a href="{% url 'manage_business:rejected_orders' %}" class="text-decoration-none text-dark">
+               <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
+                  <div class="card-body">
+                     <div class="small text-muted">Rejected</div>
+                     <div class="fs-4 my-2"><i class="bi bi-x-circle"></i></div>
+                     <div id="card-rejected-count" class="h5 fw-bold">{{ rejected_count }}</div>
+                  </div>
+               </div>
+            </a>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container slide-up" style="background-color: #EDEBE2; padding: 20px;">
+   <div class="row">
+      <!-- Orders Section -->
+      <div class="col-lg-12">
+         <div class="order-section p-3 shadow-sm rounded" style="font-family: 'Arial', sans-serif; background-color: #F5F5DC;">
+            <h3 class="mb-0 fs-5 text-center" style="font-family: 'Arial', sans-serif;"><b>Recent Order</b></h3>
+            <div class="mb-3">
+               <form method="get" id="orders-filter-form" class="d-flex justify-content-center" style="gap:8px;">
+                  <input type="search" name="q" value="{{ filter_q }}" placeholder="Search product or buyer" class="form-control" style="max-width:320px;">
+                  <select name="status" class="form-select" style="max-width:180px;">
+                     <option value="">All</option>
+                     <option value="Pending" {% if filter_status == 'Pending' or not filter_status %}selected{% endif %}>Pending</option>
+                     <option value="Accepted" {% if filter_status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                     <option value="Rejected" {% if filter_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                  </select>
+                  <button class="btn btn-outline-primary" type="submit">Filter</button>
+                  <a href="{% url 'manage_business:home' %}" class="btn btn-secondary">Clear</a>
+               </form>
+            </div>
+            <div class="table-responsive">
+               <table class="table table-centered table-borderless table-hover" style="table-layout: fixed; width: 100%; background-color: #A8A78B;">
+                  <thead style="font-family: 'Arial', sans-serif;">
+                     <tr>
+                        <th class="table_head text-center" style="width: 20%;">Customer</th>
+                        <th class="table_head text-center" style="width: 20%;">Order Product</th>
+                        <th class="table_head text-center" style="width: 15%;">Quantity</th>
+                        <th class="table_head text-center" style="width: 25%;">Order Placed</th>
+                        <th class="table_head text-center" style="width: 20%;">Actions</th>
+                     </tr>
+                  </thead>
+                  <tbody style="font-family: 'Arial', sans-serif;">
+                     {% for order in orders_page %}
+                     <tr id="order-row-{{ order.id }}" class="tr">
+                        <td class="text-center">
+                           <p>
+                              <a href="{% url 'chat:chat_with' order.buyer.id %}">
+                              {{ order.buyer.first_name }} {{ order.buyer.last_name }}
+                              </a>
+                           </p>
+                           <p>Address: {{ order.buyer.profile.municipality }}</p>
+                           <p>Street: {{ order.buyer.profile.street }}</p>
+                           <p>Postal Code: {{ order.buyer.profile.postal_code }}</p>
+                        </td>
+                        <td class="text-center">
+                           <img src="{{ order.product.product_image_url }}" alt="Product Image" 
+                                style="max-width: 80px; height: auto; display: block; margin: auto;">
+                           <p>{{ order.product.product_name }}</p>
+                        </td>
+                        <td class="text-center">{{ order.order_quantity }}</td>
+                        <td class="text-center">{{ order.created_at }}</td>
+                        <td class="text-center">
+                           <p><strong>Status:</strong> {{ order.status }}</p>
+                           {% if order.status == "Pending" %}
+                              <div style="display: flex; flex-direction: column; gap: 10px;">
+                                 <form action="{% url 'manage_business:accept_order' order.id %}" method="post" class="ajax-order-action">
+                                    {% csrf_token %}
+                                    <button type="submit" class="accept-btn">Accept</button>
+                                 </form>
+                                 <form action="{% url 'manage_business:reject_order' order.id %}" method="post" class="ajax-order-action">
+                                    {% csrf_token %}
+                                    <button type="submit" class="reject-btn">Reject</button>
+                                 </form>
+                              </div>
+                           {% else %}
+                              <p><strong>Action Taken:</strong> {{ order.status }}</p>
+                           {% endif %}
+                        </td>
+                     </tr>
+                     {% empty %}
+                     <tr style="font-family: 'Arial', sans-serif;">
+                        <td colspan="5" style="text-align: center;">No orders yet.</td>
+                     </tr>
+                     {% endfor %}
+                  </tbody>
+               </table>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+               <nav aria-label="Orders pagination">
+                 <ul class="pagination">
+                   {% if orders_page.has_previous %}
+                     <li class="page-item"><a class="page-link" href="?page={{ orders_page.previous_page_number }}{% if filter_q %}&q={{ filter_q }}{% endif %}{% if filter_status %}&status={{ filter_status }}{% endif %}">Previous</a></li>
+                   {% else %}
+                     <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                   {% endif %}
+                   <li class="page-item disabled"><span class="page-link">Page {{ orders_page.number }} of {{ orders_page.paginator.num_pages }}</span></li>
+                   {% if orders_page.has_next %}
+                     <li class="page-item"><a class="page-link" href="?page={{ orders_page.next_page_number }}{% if filter_q %}&q={{ filter_q }}{% endif %}{% if filter_status %}&status={{ filter_status }}{% endif %}">Next</a></li>
+                   {% else %}
+                     <li class="page-item disabled"><span class="page-link">Next</span></li>
+                   {% endif %}
+                 </ul>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+/* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
+.fade-out td, .fade-out th {
+   transition: opacity 0.6s ease, padding 0.6s ease;
+   opacity: 0 !important;
+   padding-top: 0 !important;
+   padding-bottom: 0 !important;
+}
+.fade-out {
+   transition: height 0.6s ease, margin 0.6s ease;
+   height: 0 !important;
+   margin: 0 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+   function getCSRFToken(){
+      const el = document.querySelector('[name=csrfmiddlewaretoken]');
+      return el ? el.value : '';
+   }
+
+   function handleOrderAction(e){
+      e.preventDefault();
+      const form = e.target;
+      const url = form.action;
+      const orderRow = form.closest('tr');
+      if(!orderRow) return;
+
+      fetch(url, {
+         method: 'POST',
+         headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+         },
+         body: new FormData(form)
+      })
+      .then(response => {
+         if (!response.ok) throw new Error('Network response was not ok');
+         return response.json();
+      })
+      .then(data=>{
+         if(data.status === 'ok'){
+            // update counts if present
+            if(data.counts){
+               const c = data.counts;
+               if(document.getElementById('card-total-products')) 
+                  document.getElementById('card-total-products').textContent = c.total_products;
+               if(document.getElementById('card-total-categories')) 
+                  document.getElementById('card-total-categories').textContent = c.total_categories;
+               if(document.getElementById('card-pending-count')) 
+                  document.getElementById('card-pending-count').textContent = c.pending_count;
+               if(document.getElementById('card-accepted-count')) 
+                  document.getElementById('card-accepted-count').textContent = c.accepted_count;
+               if(document.getElementById('card-rejected-count')) 
+                  document.getElementById('card-rejected-count').textContent = c.rejected_count;
+            }
+               // Trigger CSS fade on cells then remove the row from DOM
+               orderRow.classList.add('fade-out');
+               // Wait for fade animation, then remove row
+               setTimeout(()=>{
+                  orderRow.remove();
+
+                  // fetch next order to fill the gap
+                  const displayed = Array.from(document.querySelectorAll('tbody tr[id^="order-row-"]')).map(tr=>tr.id.replace('order-row-',''));
+                  fetch("{% url 'manage_business:fetch_next_order' %}", {
+                     method: 'POST',
+                     headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                     },
+                     body: JSON.stringify({displayed_ids: displayed})
+                  }).then(r=>{ if(!r.ok) throw new Error('Network response not ok'); return r.json(); })
+                    .then(resp=>{
+                       if(resp.found && resp.html){
+                          const tbody = document.querySelector('tbody');
+                          if(tbody){
+                             tbody.insertAdjacentHTML('beforeend', resp.html);
+                             // attach handlers to newly added forms
+                             document.querySelectorAll('.ajax-order-action').forEach(f=>{
+                                if(!f.dataset.handlerAttached){
+                                   f.dataset.handlerAttached = '1';
+                                   f.addEventListener('submit', handleOrderAction);
+                                }
+                             });
+                          }
+                       }
+                    }).catch(err=>{ console.error('fetch next order failed', err); });
+
+               }, 550);
+            } else {
+               alert('Action failed');
+            }
+         }).catch(err=>{ console.error(err); alert('Request failed');});
+   }
+
+   // Attach handlers to initial forms
+   document.querySelectorAll('.ajax-order-action').forEach(form=>{
+      form.addEventListener('submit', handleOrderAction);
+   });
+
+   // Poll counts every 10s to keep cards in sync
+   setInterval(function(){
+      fetch("{% url 'manage_business:counts_api' %}", {headers:{'X-Requested-With':'XMLHttpRequest'}})
+        .then(r=>r.json())
+        .then(c=>{
+          if(c){
+            document.getElementById('card-total-products').textContent = c.total_products;
+            document.getElementById('card-total-categories').textContent = c.total_categories;
+            document.getElementById('card-pending-count').textContent = c.pending_count;
+            document.getElementById('card-accepted-count').textContent = c.accepted_count;
+            document.getElementById('card-rejected-count').textContent = c.rejected_count;
+          }
+        }).catch(()=>{});
+   }, 10000);
+
+});
+</script>
+
+<script src="{% static 'js/slideup.js' %}"></script>
+<script src="{% static 'js/messages.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,578 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+    <title>E-Kubo: profile</title>
+    {% endblock title %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/profile_detail.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/messages.css' %}">
+    <style>
+        /* Page background matches home */
+        body {
+            background-color: #EDEBE2;
+            font-family: 'Arial', sans-serif;
+            color: #222;
+            font-size: 16px;
+        }
+
+        /* Profile avatar */
+        .user-profile {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+
+        /* Make cards use the product card body background and consistent spacing */
+        .card {
+            border: none;
+            background: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-body {
+            background: #F3EBD098;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        /* Headings and titles */
+        h5, .card-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Sidebar */
+        .sidebar .side-outline {
+            background: transparent;
+            padding: 1rem 0.5rem 2rem 0.5rem;
+        }
+        .sidebar a {
+            display: inline-block;
+            color: #222;
+            padding: 6px 0;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .sidebar a.active { font-weight: 700; color: #3EB489; }
+
+        /* Buttons and links inside buttons should keep consistent font-size */
+        .btn, .btn-outline-secondary {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .btn-outline-secondary a { color: inherit; text-decoration: none; }
+
+        /* Tables and lists */
+        table.table {
+            font-size: 0.95rem;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            body { font-size: 15px; }
+            .user-profile { width: 120px; height: 120px; }
+            h5, .card-title { font-size: 0.98rem; }
+        }
+
+        /* Tab panel styling for wishlist, settings, order-history, notifications */
+        .tab-panel {
+            background: #F3EBD098;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body style="background-color: #EDEBE2;">
+    {% include 'chat/navbar.html' %}
+    <div class="login-container">
+        {% if messages %}
+          <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 400px; padding: 0 1rem;">
+            {% for message in messages %}
+              <div class="toast show align-items-center text-white 
+                {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} 
+                border-0 mx-auto" role="alert" aria-live="assertive" aria-atomic="true"
+                style="font-family: 'Arial', sans-serif;">
+                <div class="d-flex">
+                  <div class="toast-body text-center w-100">
+                    {{ message }}
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="row slide-up">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 sidebar">
+                <div class="side-outline text-center pt-5" style="font-family: 'Arial', sans-serif;">
+                    <h5 class="text-center mb-3">User Profile</h5>
+                    <a style="margin-top: 5px;" href="#" class="active" data-section="dashboard">Dashboard</a><br>
+                    {% if is_customer %}
+                    <a style="margin-top: 5px;" href="#" data-section="order-history">Order History</a><br>
+                    <a style="margin-top: 5px;" href="#" data-section="wishlist">Wishlist</a><br>
+                    {% endif %}
+                    <a style="margin-top: 5px;" href="#" data-section="notifications">Notification</a><br>
+                    <a style="margin-top: 5px;" href="#" data-section="settings">Settings</a><br>
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
+                    
+                </div>
+            </nav>
+            <!-- Main Content -->
+            <main class="col-md-9 col-lg-10 py-0">
+                <div id="content-area">
+                    <!-- Default Content -->
+                <div class="container mt-5">
+                    <!-- Profile Section -->
+                    <div class="row">
+                    <div class="col-md-6 col-sm-12 mb-4">
+                        <div class="card h-100">
+                        <div class="card-body text-center" style="font-family: 'Arial', sans-serif;">
+                            <img class='user-profile' src="{{ profile.profile.url }}" alt="Profile Picture" style="border: 2px solid #729FF1;">
+                            <h5 class="card-title">{{ profile.user.first_name }}</h5>
+                            {% if user.business %}
+                                <p class="text-muted">Customer | Business owner</p>
+                            {% else %}
+                                <p class="text-muted">Customer</p>
+                            {% endif %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'chat:edit_profile' %}"><i class="bi bi-pencil-square me-1"></i></a></button>
+                            {% if user.business %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'manage_business:home' %}">Manage Shop</a></button>
+                            {% else %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'products:create_business' %}">Create Shop</a></button>
+                            {% endif %}
+
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12 mb-4">
+                        <div class="card h-100">
+                        <div class="card-body" style="font-family: 'Arial', sans-serif;">
+                            <h5 class="card-title">Billing Address</h5>
+                            <p class="mb-1">{{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                            <p class="mb-1">0{{ profile.user.phone }}</p>
+                            <p class="mb-1">{{ profile.province }}</p>
+                            <p class="mb-1">{{ profile.street }} {{ profile.municipality }} {{ profile.province }} {{ profile.postal_code }}</p>
+                            <p class="mb-1">{{ profile.user.username }}</p>
+                            <a class='text-dark' href="{% url 'chat:edit_address' %}">
+                                <button class='btn btn-outline-secondary'><i class="bi bi-pencil-square me-1"></i> Edit</button>
+                            </a>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Order History Section -->
+                    {% if is_customer %}
+                    <div class="card">
+                    <div class="card-body" style="font-family: 'Arial', sans-serif;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Recent Order History</h5>
+                        </div>
+                        <div class="table-responsive" style="font-family: 'Arial', sans-serif;">
+                            {% block content %}
+                                <div class="table-responsive">
+                                <table class="table table-bordered mb-0 text-center align-middle" style="font-family: 'Arial', sans-serif;">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Quantity</th>
+                                            <th>Status</th>
+                                            <th>Ordered At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in order_history|slice:":5" %}
+                                    <tr>
+                                        <td> <img style="width: 30px; height: 30px;" src="{{ order.product.product_image_url}}" alt=""/> {{ order.product.product_name }}</td>
+                                        <td>{{ order.order_quantity }}</td>
+                                        <td>{{ order.status }}</td>
+                                        <td>{{ order.created_at }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4">No orders found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+                            {% endblock %}                            
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </main>
+        </div>
+        {% endif %}
+        
+    </div>
+
+    <script>
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+    const contentArea = document.getElementById('content-area');
+    const contentMap = {
+    'dashboard': `
+        <div class="container mt-5">
+            <!-- Profile Section -->
+            <div class="row" style="font-family: 'Arial', sans-serif;">
+                <div class="col-md-6 col-sm-12 mb-4">
+                    <div class="card h-100" style="font-family: 'Arial', sans-serif;">
+                        <div class="card-body text-center">
+                            <img class='user-profile' src="{{ profile.profile.url }}" alt="Profile Picture">
+                            <h5 class="card-title">{{ profile.user.first_name }}</h5>
+                            {% if user.business %}
+                                <p class="text-muted">Customer | Business owner</p>
+                            {% else %}
+                                <p class="text-muted">Customer</p>
+                            {% endif %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'chat:edit_profile' %}">edit profile</a></button>
+                            {% if user.business %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'manage_business:home' %}">Manage Business</a></button>
+                            {% else %}
+                            <button class='btn btn-outline-secondary'><a class="text-dark" href="{% url 'products:create_business' %}">Create Business</a></button>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 mb-4">
+                    <div class="card h-100">
+                    <div class="card-body" style="font-family: 'Arial', sans-serif;">
+                        <h5 class="card-title">Billing Address</h5>
+                        <p class="mb-1">{{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                        <p class="mb-1">0{{ profile.user.phone }}</p>
+                        <p class="mb-1">{{ profile.province }}</p>
+                        <p class="mb-1">{{ profile.street }} {{ profile.municipality }} {{ profile.province }} {{ profile.postal_code }}</p>
+                        <p class="mb-1">{{ profile.user.username }}</p>
+                        <button class='btn btn-outline-secondary'><a class='text-dark' href="{% url 'chat:edit_address' %}">edit profile</a></button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order History Section -->
+            <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Recent Order History</h5>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="font-family: 'Arial', sans-serif;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Ordered At</th>
+                                </tr>
+                                {% for order in order_history|slice:":5" %}
+                                <tr>
+                                    <td> <img style="width: 30px; height: 30px;" src="{{ order.product.product_image_url}}" alt=""/> {{ order.product.product_name }}</td>
+                                    <td>{{ order.order_quantity }}</td>
+                                    <td>{{ order.status }}</td>
+                                    <td>{{ order.created_at }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">No orders found.</td>
+                                </tr>
+                                {% endfor %}
+                            </table>                      
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            </div>
+        </div>
+    `,
+    {% if is_customer %}
+    'order-history': `
+        <div class="tab-panel">
+        <h5>Order History</h5>
+        <div class="table-responsive">
+         <table class="table table-bordered mb-0" style="font-family: 'Arial', sans-serif; background: #5A585084; outline:1px solid black; border-radius:10px; justify-content:center; align-items:center;">
+            <thead style="font-family: 'Arial', sans-serif;">
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Ordered At</th>
+                </tr>
+            </thead>
+            <tbody style="font-family: 'Arial', sans-serif; background: #FBF3DD93;">
+                {% for order in order_history %}
+                <tr>
+                    <td> <img style="width: 30px; height: 30px;" src="{{ order.product.product_image_url}}" alt=""/> {{ order.product.product_name }}</td>
+                    <td>{{ order.order_quantity }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.created_at }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        </div>
+    `,
+    'wishlist': `
+        <div class="tab-panel">
+        <h5 class='mt-3 text-center' style="font-family: 'Arial', sans-serif;">Wishlist</h5>
+        <div class="table-responsive">
+        <table class="table table-bordered mb-0" style="font-family: 'Arial', sans-serif; background: #5A585084; outline:1px solid black; border-radius:10px; justify-content:center; align-items:center;">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th style="width:180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in wishlist %}
+                <tr style="background: #FBF3DD93;">
+                    <td class="align-middle">
+                        <img width="60" height="60" src="{{ item.product.product_image_url }}" alt=""> {{ item.product.product_name }}
+                    </td>
+                    <td class="align-middle">₱{{ item.product.product_price }}</td>
+                    <td class="align-middle">
+                        <form action="{% url 'products:order_details' item.product.id %}" method="POST" style="display:inline-block; margin-right:8px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-buy text-dark by-button btn-sm">Buy</button>
+                        </form>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeFromWishlist({{ item.id }})" title="Remove"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Your wishlist is empty.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        </div>
+    `,
+    {% endif %}
+    'notifications': `
+        <div class="tab-panel">
+        <h5 style="font-family: 'Arial', sans-serif;">Notifications</h5>
+        <table class="table table-bordered mb-0" style="font-family: 'Arial', sans-serif; background: #5A585084; outline:1px solid black; border-radius:10px; justify-content:center; align-items:center;">
+        <thead style="font-family: 'Arial', sans-serif;">
+            <tr>
+                <th>Date</th>
+                <th>Content</th>
+            </tr>
+        </thead>
+        <tbody style="font-family: 'Arial', sans-serif;">
+            {% for notification in read_notifications %}
+            <tr style="background: #FBF3DD93;">
+                <td>{{ notification.created_at }}</td>
+                <td>{{ notification.message }}</td>
+            </tr>
+            {% empty %}
+            <tr style="background: #FBF3DD93;">
+                <td colspan="2">No notifications found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center mt-3">
+        <ul class="pagination">
+            {% if read_notifications.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ read_notifications.previous_page_number }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ read_notifications.number }} of {{ read_notifications.paginator.num_pages }}</span></li>
+            {% if read_notifications.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ read_notifications.next_page_number }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </div>
+    </div>
+    `,
+    'settings': `
+        <div class="tab-panel">
+        <h5 style="font-family: 'Arial', sans-serif;" class='mb-3 mt-3'>Account settings</h5>
+        <!-- Profile Section -->
+        <div class="row">
+            <div class="col-md-7 mb-4" style="font-family: 'Arial', sans-serif;">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <label>First name</label>
+                        <input class='w-100 mb-2' type='text' value='{{ profile.user.first_name }}'>
+                        <label>Last name</label>
+                        <input class='w-100 mb-2' type='text' value='{{ profile.user.last_name }}'>
+                        <label>Phone</label>
+                        <input class='w-100 mb-2' type='text' value='0{{ profile.user.phone }}'>
+                        <label>Email</label>
+                        <input class='w-100 mb-5' type='text' value='{{ profile.user.username }}'> 
+                        <a class='text-dark' href="{% url 'chat:update_user' user.id %}">
+                            <button class='btn btn-outline-secondary'><i class="bi bi-pencil-square me-1"></i> Update</button>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class='col-md-5' style="font-family: 'Arial', sans-serif;">
+                <div class="card h-100" style='justify-content:center; align-items:center; background: #FBF3DDBC; padding:20px;'>
+                    <img style='width:200px; height:200px;border-radius:100px; border: 2px solid #729FF1;' src="{{ profile.profile.url }}" alt="Profile Picture">
+                    <a class='text-center text-dark' href="{% url 'chat:edit_profile' %}"> 
+                        <button class='btn btn-outline-secondary mt-3'><i class="bi bi-pencil-square me-1"></i> Change Profile</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div style='outline: 1px solid #c4c4c4;outline-offset: 2px;padding: 10px; border-radius: 5px; margin-top:5px'>
+            <h5 style="font-family: 'Arial', sans-serif;">Delivery address</h5>
+            <hr>
+            <div class='row' style="font-family: 'Arial', sans-serif;">
+                <div class='col-md-4'>
+                    <label>First name</label>
+                    <input class='w-100 mb-2' type='text' value='{{ profile.user.first_name }}'>
+                </div>
+                <div class='col-md-4'>
+                    <label>Last name</label>
+                    <input class='w-100 mb-2' type='text' value='{{ profile.user.last_name }}'>
+                </div>
+                <div class='col-md-4'>
+                    <label>Middle name</label>
+                    <input class='w-100 mb-2' type='text' value='N/A'>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Barangay street</label>
+                    <input class='w-100 mb-2' type='text' value='{{ profile.street }} {{ profile.municipality }} {{ profile.province }} {{ profile.postal_code }}'>
+                </div>
+                <div class='col-md-6'>
+                    <label>Email</label>
+                    <input class='w-100 mb-5' type='text' value='{{ profile.user.username }}'>
+                </div>
+            </div>
+        </div>
+        <br>
+        <a href="{% url 'chat:verify_user' %}"><button class='btn btn-outline-dark mb-5'> change password  </button></a><br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        </div>
+    `,
+    'logout': `
+        <h2>Log-out</h2>
+        <p>You have successfully logged out. See you next time!</p>
+    `
+    };
+    sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const section = link.getAttribute('data-section');
+        contentArea.innerHTML = contentMap[section];
+    });
+});
+
+    function removeFromWishlist(itemId) {
+        // Store the itemId for use in the confirmation modal
+        document.getElementById('confirmRemoveBtn').onclick = function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/products/wishlist/remove/${itemId}/`;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (csrfToken) {
+                form.appendChild(csrfToken.cloneNode(true));
+            }
+            document.body.appendChild(form);
+            form.submit();
+        };
+        // Show the confirmation modal
+        const removeModal = new bootstrap.Modal(document.getElementById('removeWishlistModal'));
+        removeModal.show();
+    }
+    </script>
+    <div class="modal fade" id="removeWishlistModal" tabindex="-1" aria-labelledby="removeWishlistModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeWishlistModalLabel">Remove from Wishlist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove this product from your wishlist?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveBtn">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{% url 'chat:logout' %}" method="POST" id="logoutForm">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Yes, Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'chat/footer.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></script>
+    <script src="{% static 'js/profile_detail.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/messages.js' %}"></script>
+    <script src="{% static 'js/slideup.js' %}"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

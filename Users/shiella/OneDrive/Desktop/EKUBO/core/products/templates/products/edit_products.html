@@ -1,0 +1,137 @@
+{% extends 'chat/vendor_base.html' %}
+{% load static %}
+{% block title %}
+   <title>E-Kubo: edit products</title>
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+{% block content %}
+<div class="container mt-4 mb-5 slide-up"> <!-- Added margin-bottom to prevent footer push -->
+    <h2 class="text-center">Update Product</h2>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 shadow-lg rounded bg-white">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_product_name" class="form-label fw-bold">Product Name</label>
+            {{ form.product_name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_product_description" class="form-label fw-bold">Product Description</label>
+            {{ form.product_description }}
+            <small id="descCounter" class="text-muted">0/200 characters</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_product_category" class="form-label fw-bold">Product Category</label>
+            {{ form.product_category }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="id_product_price" class="form-label fw-bold">Product Price</label>
+                {{ form.product_price }}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="id_product_measurement" class="form-label fw-bold">Product Measurement</label>
+                {{ form.product_measurement }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_product_stock" class="form-label fw-bold">Product Stock</label>
+            {{ form.product_stock }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Product Images</label>
+            <div class="d-flex flex-wrap gap-2">
+                <input type="file" class="form-control" id="imageInput" name="product_image">
+                <input type="file" class="form-control" id="imageInput1" name="product_image1">
+                <input type="file" class="form-control" id="imageInput2" name="product_image2">
+                <input type="file" class="form-control" id="imageInput3" name="product_image3">
+                <input type="file" class="form-control" id="imageInput4" name="product_image4">
+            </div>
+            <div id="imagePreview" class="mt-3 d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Update Product</button>
+    </form>
+</div>
+
+<script src="{% static 'js/slideup.js' %}"></script>
+<script>
+    // Character count for product description
+    document.getElementById('id_product_description').addEventListener('input', function () {
+        document.getElementById('descCounter').textContent = this.value.length + "/200 characters";
+    });
+
+    // Image preview functionality
+    function previewImages(input) {
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.innerHTML = ''; // Clear previous previews
+
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('rounded', 'shadow-sm');
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                imagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function () {
+            previewImages(this);
+        });
+    });
+</script>
+
+<style>
+    .container {
+        max-width: 600px;
+    }
+
+    form {
+        border-radius: 10px;
+        background-color: #f8f9fa;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        border-radius: 8px;
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0056b3, #003580);
+    }
+
+    /* Ensure footer is not affected */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .container {
+        flex: 1; /* Allows content to grow but keeps footer at the bottom */
+    }
+</style>
+{% endblock %}

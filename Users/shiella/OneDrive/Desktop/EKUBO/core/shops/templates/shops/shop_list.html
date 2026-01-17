@@ -1,0 +1,121 @@
+{% extends 'chat/base.html' %}
+{% load static %}
+{% block title %}
+   <title>E-Kubo: Shops</title>
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+{% block content %}
+<style>
+   body{
+      background-color: #EDEBE2
+   }
+   .business-card{
+      background-color: #FBF3DDBC;
+   }
+   /* Keep card layout intact while visually enlarging the shop image */
+   .business-image-container {
+      height: 70px; /* same as previous visual height to avoid changing card size */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: visible; /* allow visual enlargement without changing layout */
+   }
+   .business-image-container img {
+      height: 70px;
+      width: 90px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 2px rgba(85,85,85,0.8);
+      object-fit: cover;
+      transform: scale(1.6); /* visually larger without altering container size */
+      transform-origin: center center;
+   }
+   @media (min-width: 480px) and (max-width: 768px) {
+    .col {
+        flex: 0 0 50%; /* Each column takes 50% width */
+        max-width: 50%;
+    }
+}
+</style>
+<main>
+   <!-- section -->
+   <section class="mt-8 slide-up">
+      <!-- container -->
+      <div class="container">
+         <!-- row -->
+         <div class="row">
+            <div class="col-12">
+               <!-- heading -->
+               <div class="bg-light d-flex justify-content-between ps-md-10 ps-6 rounded">
+                  <div class="d-flex align-items-center">
+                     <h5 class="mb-0 fw-bold" style="font-family: 'Arial', sans-serif;">Registered Shop</h5>
+                  </div>
+                  <div class="py-6">
+                     <!-- img -->
+                     <img src="{% static 'images/why_choose_us/store-graphics.svg' %}" alt="" class="img-fluid" />
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- section -->
+   <section class="mt-8 mb-lg-14 mb-8">
+      <div class="container">
+         <!-- row -->
+         <div class="row">
+            <!-- col -->
+            <div class="col-12">
+               <div class="mb-3">
+                  <!-- text -->
+                  <h6 style="font-family: 'Arial', sans-serif;">
+                     We have
+                     <span class="text-primary">{{total_shop}}</span>
+                     vendors now
+                  </h6>
+               </div>
+            </div>
+         </div>
+         <!-- <div class="row row-cols-1 row-cols-lg-4 row-cols-md-3 g-4 g-lg-4"> -->
+         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 g-lg-4">
+
+            {% for shop in shop %}
+            <div class="col">
+               <!-- card -->
+               <a href="{% url 'shops:view_shop' shop.id %}" class="text-inherit" style="text-decoration: none; text_underline: none;">
+               <div class="card p-6 card-product business-card">
+                  <div class="business-image-container mt-1">
+                     <img src="{{ shop.business_image_url }}" alt="" />
+                  </div>
+                 
+                  <div class="mt-4" style="font-family: 'Arial', sans-serif; ">
+                     <!-- content -->
+                        <h6 class="mb-1 h5 text-center mt-2" style="text-decoration: none; text_underline: none;">{{ shop.business_name |title}}</h6>
+                     <div class="small text-muted">
+
+                        <small style="font-family: 'Arial', sans-serif;font-size: 12px;" class="me-2"><b>Shop Desc:</b> {{shop.business_description |title}}</small> 
+                        <br>
+                        <small style="font-family: 'Arial', sans-serif;font-size: 12px;"><b>message owner:</b> <a style="color: rgb(62, 62, 205);" href="{% url 'chat:chat_with' shop.user.id %}">message</a>
+                        </small> 
+                     </div>
+                     <div style="font-family: 'Arial', sans-serif; margin-top: 0px;">
+                        <ul class="list-unstyled mb-1 mt-0 small">
+                           <p class="mb-0 text-dark" style="font-family: 'Arial', sans-serif;font-size: 12px;"><b>Shipping:</b></p>
+                           <small><li>- Delivery</li></small>
+                           <small><li>- Pickup</li></small>
+                        </ul>
+                     </div>
+                     <div>
+                        <!-- badge -->
+                        <div class="badge text-bg-light border">available products: {{ shop.products.count }}</div>
+                     </div>
+                  </div>
+               </div>
+               </a>
+            </div>
+            {% endfor %}
+         </div>
+      </div>
+   </section>
+</main>
+<script src="{% static 'js/slideup.js' %}"></script>
+{% endblock %}

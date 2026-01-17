@@ -1,0 +1,607 @@
+{% extends 'chat/base.html' %}
+{% load static custom_filters %}
+{% block title %}
+   <title>E-Kubo: Home</title>
+{% endblock title %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+<link rel="stylesheet" href="{% static 'css/home2.css' %}">
+
+
+<main style="font-family: 'Arial', sans-serif;">
+
+   <!-- Messages Alert -->
+   {% if messages %}
+   <div class="messages_notification" style="position: fixed; top: 20px; right: 40%; z-index: 1050; font-family: Arial, sans-serif;">
+     {% for message in messages %}
+       <div class="toast show align-items-center text-white 
+           {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} 
+           border-0" role="alert" aria-live="assertive" aria-atomic="true">
+         <div class="d-flex">
+           <div class="toast-body">
+             {{ message }}
+           </div>
+           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+         </div>
+       </div>
+     {% endfor %}
+   </div>
+   {% endif %}
+   <!-- End Messages Alert -->
+
+
+<!-- Search Results Section -->
+   {% if query %}
+      <section class="my-lg-14 my-5 slide-up">
+         <div class="container">
+            <div class="row">
+               <div class="col-12 mb-6">
+                  <h5 class="mb-0"><b style="font-family: 'Arial', sans-serif;">Products You Might Looking</b></h5>
+               </div>
+            </div>
+            <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3" style="font-family: 'Arial', sans-serif;">
+               {% if query %}
+                  {% for products in results %}
+                  <div class="col">
+                     <div class="card card-product">
+                        <div class="card-body">
+                           <div class="text-center position-relative">
+                              <div class="position-absolute top-0 start-0">
+                                 <div class="availability">
+                                    {% if products.product_stock >= 1 %}
+                                       <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                                    {% else %}
+                                       <small>unavailable</small>
+                                    {% endif %}
+                                 </div>
+                                 <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if products|in_wishlist:request.user %}
+                                       <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                          <i class="bi bi-heart-fill"></i>
+                                       </button>
+                                    {% else %}
+                                       <button class="wishlist-button" title="Add to wishlist">
+                                          <i class="bi bi-heart"></i>
+                                       </button>
+                                    {% endif %}
+                                 </form>
+                              </div>
+                              <a href="{% url 'products:view_product' products.id %}">
+                                 <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                              </a>
+                           </div>
+                           <h2 class="fs-6"><a href="pages/shop-single.html" class="text-inherit text-decoration-none">{{products.product_name|title}}</a></h2>
+                           <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
+                              <div>
+                                 <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
+                              </div>
+                              {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                                 <div>
+                                    <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                       {% csrf_token %}
+                                       <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                                    </form>
+                                 </div>
+                              {% else %}
+                                 <div>
+                                    <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                       {% csrf_token %}
+                                       <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                                    </form>
+                                 </div>
+                              {% endif %}
+                           </div>
+                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                              <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                           {% endif %}
+                        </div>
+                     </div>
+                  </div>
+                  {% endfor %}
+               {% else %}
+               <small>unavailable</small>
+               {% endif %}
+            </div>
+         </div>
+      </section>
+   {% else %}
+<!-- End Search Results Section -->
+
+   <!-- Hero Section -->
+   <section class="mt-6 slide-up" style="font-family: 'Arial', sans-serif;">
+      <div class="container">
+         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+               <!-- Slide 1: Left = 3/5 (single static image), Right = 2/5 (stacked two images) -->
+               <div class="carousel-item active">
+                  <div class="container">
+                     <div class="row gx-3 align-items-stretch">
+                        <div class="col-12 col-md-7">
+                           <div class="h-100 rounded" style="background-image: url({% static 'images/banner/banner3.png' %}); background-size: cover; background-position: center; min-height: 320px;">
+                              <lottie-player
+                                 src="{% static 'animation/click.json' %}"
+                                 background="transparent"
+                                 speed="1"
+                                 loop
+                                 autoplay
+                                 class="banner-lottie"
+                                 style="width: 300px; height: 300px; position: absolute; bottom: 90px; left: 40px;">
+                              </lottie-player>
+                           </div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                           <div class="row g-2 h-100">
+                              <div class="col-12">
+                                 <div class="rounded" style="background-image: url({% static 'images/banner/banner2.png' %}); background-size: cover; background-position: center; height: 160px; border: 1px solid #D3C69C;"></div>
+                              </div>
+                              <div class="col-12">
+                                 <div class="rounded" style="background-image: url({% static 'images/banner/banner1.png' %}); background-size: cover; background-position: center; height: 160px; border: 1px solid #D3C69C;"></div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- temporary slide: no text - replace images later -->
+                  </div>
+               </div>
+
+               <!-- Slide 2: Left = 2/5 (stacked), Right = 3/5 (large image) -->
+               <div class="carousel-item">
+                  <div class="container">
+                     <div class="row gx-3 align-items-stretch">
+                        <div class="col-12 col-md-5">
+                           <div class="row g-2 h-100">
+                              <div class="col-12">
+                                 <div class="rounded" style="background-image: url({% static 'images/banner/banner4.png' %}); background-size: cover; background-position: center; height: 160px; border: 1px solid #D3C69C;"></div>
+                              </div>
+                              <div class="col-12">
+                                 <div class="rounded" style="background-image: url({% static 'images/banner/banner5.png' %}); background-size: cover; background-position: center; height: 160px; border: 1px solid #D3C69C;"></div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-12 col-md-7">
+                           <div class="h-100 rounded" style="background-image: url({% static 'images/banner/banner6.png' %}); background-size: cover; background-position: center; min-height: 320px;"></div>
+                        </div>
+                     </div>
+                     <!-- temporary slide: no text - replace images later -->
+                  </div>
+               </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+               <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+               <span class="carousel-control-next-icon" aria-hidden="true"></span>
+               <span class="visually-hidden">Next</span>
+            </button>
+         </div>
+      </div>
+   </section>
+   <!-- End Hero Section -->
+   {% endif %}
+   
+   <!-- category section -->
+   <section class="mb-lg-10 mt-lg-14 my-4 slide-up">
+      <div class="container">
+         <div class="row" style="font-family: 'Arial', sans-serif;">
+            <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+               <h5 class="mb-0">Featured Categories</h5>
+               <a href="#" data-bs-toggle="modal" data-bs-target="#allCategoriesModal" class="text-decoration-none" style="font-size: 0.9rem; color: #6A951F; cursor: pointer;">
+                  View All
+               </a>
+            </div>
+         </div>
+         <div class="category-slider-wrapper">
+            <div class="category-slider" style="font-family: 'Arial', sans-serif;">
+               {% for category in categories %}
+               <div class="category-card" style="border: 1px solid #D5D5D5;">
+                  <a href="{% url 'products:show_products_category' category.id %}">
+                     <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%" />
+                  </a>
+                  <h6 class="text-dark mt-3">{{ category.name|title }}</h6>
+               </div>
+               {% endfor %}
+               <!-- Duplicate categories for seamless looping -->
+               {% for category in categories %}
+               <div class="category-card" style="border: 1px solid #D5D5D5;">
+                  <a href="{% url 'products:show_products_category' category.id %}">
+                     <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%" />
+                  </a>
+                  <h6 class="text-dark mt-3">{{ category.name|title }}</h6>
+               </div>
+               {% endfor %}
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Recommended Products -->
+   {% if recommended_products %}
+   <div class="container my-4">
+      <div class="row">
+         <div class="col-12 mb-3" style="font-family: 'Arial', sans-serif;">
+            <h5 class="mb-0">Recommended For You</h5>
+         </div>
+      </div>
+      <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3">
+         {% for products in recommended_products %}
+         <div class="col">
+            <div class="card card-product">
+               <div class="card-body">
+                  <div class="text-center position-relative">
+                     <div class="position-absolute top-0 start-0" style="font-family: 'Arial', sans-serif;">
+                        <div class="availability">
+                              {% if products.product_stock >= 1 %}
+                                 <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                              {% else %}
+                                 <small>unavailable</small>
+                              {% endif %}
+                           </div>
+                        <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                           {% csrf_token %}
+                           {% if products|in_wishlist:request.user %}
+                              <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                 <i class="bi bi-heart-fill"></i>
+                              </button>
+                           {% else %}
+                              <button class="wishlist-button" title="Add to wishlist">
+                                 <i class="bi bi-heart"></i>
+                              </button>
+                           {% endif %}
+                        </form>
+                     </div>
+                     <a href="{% url 'products:view_product' products.id %}">
+                        <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                     </a>
+                  </div>
+                  <h2 style="font-family: 'Arial', sans-serif;" class="fs-6"><a href="pages/shop-single.html" class="text-inherit text-decoration-none">{{products.product_name|title}}</a></h2>
+                  <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
+                     <div>
+                        <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
+                     </div>
+                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        <div>
+                           <form action="{% url 'products:order_details' products.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                           </form>
+                        </div>
+                     {% else %}
+                        <div>
+                           <form action="{% url 'products:order_details' products.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                           </form>
+                        </div>
+                     {% endif %}
+                  </div>
+                  {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                  <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                  {% endif %}
+               </div>
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+   </div>
+   {% endif %}
+   <!-- End Recommended Products -->
+
+   <!--Discount section-->
+   <section>
+      <div class="container slide-up">
+         <div class="row">
+            <div class="col-12 col-md-6 mb-3 mb-lg-0">
+               <div>
+                  <div class="py-10 px-8 rounded" style="background: url(../../../static/images/discount/fruits_and_veges1.jpg) no-repeat; background-size: cover; background-position: center">
+                     <div>
+                        <h3 style="font-family: 'Arial', sans-serif;" class="fw-bold mb-1 text-light">Fruits & Vegetables</h3>
+                        <p class="mb-4 text-light" style="font-family: 'Arial', sans-serif; ">
+                           Get Upto
+                           <span class="fw-bold text-light">30%</span>
+                           Off
+                        </p>
+                        <a style="font-family: 'Arial', sans-serif;" href="{% url 'chat:home' %}" class="btn btn-dark">Shop Now</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="col-12 col-md-6">
+               <div>
+                  <div class="py-10 px-8 rounded" style="background: url(../../../static/images/discount/fresh_baked_buns.jpg) no-repeat; background-size: cover; background-position: center">
+                     <div style="font-family: 'Arial', sans-serif;">
+                        <h3 class="fw-bold mb-1 text-light">Freshly Baked Buns</h3>
+                        <p class="mb-4 text-light">
+                           Get Upto
+                           <span class="fw-bold text-light">25%</span>
+                           Off
+                        </p>
+                        <a href="{% url 'chat:home' %}" class="btn btn-dark">Shop Now</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!--new arrival-->
+    <section>
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12 mb-3" style="font-family: 'Arial', sans-serif;">
+               <h5 class="mb-0"><b> New Arrivals</b></h5>
+            </div>
+         </div>
+         <div class="table-responsive-lg pb-6">
+            <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3" style="font-family: 'Arial', sans-serif;">
+               {% for products in new_arrivals %}
+               <div class="col">
+               <div class="card card-product">
+                  <div class="card-body">
+                     <div class="text-center position-relative">
+                        <div class="position-absolute top-0 start-0" style="font-family: 'Arial', sans-serif;">
+                           <div class="availability">
+                              {% if products.product_stock >= 1 %}
+                                 <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                              {% else %}
+                                 <small>unavailable</small>
+                              {% endif %}
+                           </div>
+                           <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                              {% csrf_token %}
+                              {% if products|in_wishlist:request.user %}
+                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                    <i class="bi bi-heart-fill"></i>
+                                 </button>
+                              {% else %}
+                                 <button class="wishlist-button" title="Add to wishlist">
+                                    <i class="bi bi-heart"></i>
+                                 </button>
+                              {% endif %}
+                           </form>
+                        </div>
+                        <a href="{% url 'products:view_product' products.id %}">
+                           <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                        </a>
+                     </div>
+
+                     <h6 style="font-family: 'Arial', sans-serif;" class="fs-6">{{products.product_name|title}}</h6>
+                     <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
+                        <div>
+                           <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
+                        </div>
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <div>
+                              <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                              </form>
+                           </div>
+                        {% else %}
+                           <div>
+                              <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                              </form>
+                           </div>
+                        {% endif %}
+                     </div>
+                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                     <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                     {% endif %}
+                  </div>
+               </div>
+            </div>
+               {% endfor %}
+            </div>
+         </div>
+      </div>
+   </section>
+
+
+   <!-- Popular Products Start-->
+   <section class="my-lg-14 my-4 slide-up">
+      <div class="container">
+         <div class="row">
+            <div class="col-12 mb-3" style="font-family: 'Arial', sans-serif;">
+               <h5 class="mb-0">Discover Products</h5>
+            </div>
+         </div>
+         <div class="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3">
+            {% for products in products %}
+            <div class="col">
+               <div class="card card-product">
+                  <div class="card-body">
+                     <div class="text-center position-relative">
+                        <div class="position-absolute top-0 start-0" style="font-family: 'Arial', sans-serif;">
+                           <div class="availability">
+                              {% if products.product_stock >= 1 %}
+                                 <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                              {% else %}
+                                 <small>unavailable</small>
+                              {% endif %}
+                           </div>
+                           <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
+                              {% csrf_token %}
+                              {% if products|in_wishlist:request.user %}
+                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                    <i class="bi bi-heart-fill"></i>
+                                 </button>
+                              {% else %}
+                                 <button class="wishlist-button" title="Add to wishlist">
+                                    <i class="bi bi-heart"></i>
+                                 </button>
+                              {% endif %}
+                           </form>
+                        </div>
+                        <a href="{% url 'products:view_product' products.id %}">
+                           <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
+                        </a>
+                     </div>
+
+                     <h6 style="font-family: 'Arial', sans-serif;" class="fs-6">{{products.product_name|title}}</h6>
+                     <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
+                        <div>
+                           <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
+                        </div>
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <div>
+                              <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                              </form>
+                           </div>
+                        {% else %}
+                           <div>
+                              <form action="{% url 'products:order_details' products.id %}" method="POST">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                              </form>
+                           </div>
+                        {% endif %}
+                     </div>
+                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                     <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                     {% endif %}
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+         </div>
+      </div>
+   </section>
+   <!-- Popular Products End-->
+
+   <!-- why choose us -->
+   <section class="my-lg-14 my-4 slide-up">
+      <div class="container">
+         <div class="row row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
+            <div class="col">
+               <div class="card h-100 text-center p-4 why-choose-us-card" style="font-family: 'Arial', sans-serif;">
+                  <div class="mb-4"><img src="{% static 'images/why_choose_us/fast_delivery.jpg' %}" alt="" width="100" height="100" style="border-radius: 5%;"/></div>
+                  <h3 class="h5 mb-3">10 minute grocery now</h3>
+                  <p>Get your order delivered to your doorstep at the earliest from FreshCart pickup stores near you.</p>
+               </div>
+            </div>
+            <div class="col">
+               <div class="card h-100 text-center p-4 why-choose-us-card" style="font-family: 'Arial', sans-serif;">
+                  <div class="mb-4"><img src="{% static 'images/why_choose_us/coin.jpg' %}" alt="" width="100" height="100" style="border-radius: 5%;"/></div>
+                  <h3 class="h5 mb-3">Best Prices & Offers</h3>
+                  <p>Cheaper prices than your local supermarket, great cashback offers to top it off. Get best prices & offers.</p>
+               </div>
+            </div>
+            <div class="col">
+               <div class="card h-100 text-center p-4 why-choose-us-card" style="font-family: 'Arial', sans-serif;">
+                  <div class="mb-4"><img src="{% static 'images/why_choose_us/return.jpg' %}" alt="" width="100" height="100" style="border-radius: 5%;"/></div>
+                  <h3 class="h5 mb-3">Easy Returns</h3>
+                  <p>Not satisfied with a product? Return it at the doorstep & get a refund within hours. No questions asked <a href="#">policy</a>.</p>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- end why choose us -->
+
+   <!-- Lottie Animation -->
+   <a href="{% url 'chat:chat_dashboard' %}">
+   <lottie-player
+    src="{% static 'animation/Welcome Animation.json' %}" 
+    background="transparent"
+    speed="1"
+    style="width: 300px; height: 300px; position:fixed;
+      bottom:-50px;   
+      right: -50px;"
+      loop
+      autoplay >
+   </lottie-player>
+   </a>
+   <!-- End Lottie Animation -->
+
+   <!-- All Categories Modal -->
+   <div class="modal fade" id="allCategoriesModal" tabindex="-1" aria-labelledby="allCategoriesLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="allCategoriesLabel">All Categories</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <div class="row row-cols-lg-5 row-cols-md-3 row-cols-2 g-4" style="font-family: 'Arial', sans-serif;">
+                  {% for category in categories %}
+                  <div class="col">
+                     <div class="category-card" style="border: 1px solid #D5D5D5; cursor: pointer;">
+                        <a href="{% url 'products:show_products_category' category.id %}">
+                           <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%; height: 120px;" />
+                        </a>
+                        <h6 class="text-dark mt-3 text-center">{{ category.name|title }}</h6>
+                     </div>
+                  </div>
+                  {% endfor %}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- End All Categories Modal -->
+</main>
+
+
+
+<script>
+   document.addEventListener("DOMContentLoaded", function() {
+       const categoryLinks = document.querySelectorAll(".category-link");
+       
+       categoryLinks.forEach(link => {
+           link.addEventListener("click", function() {
+               const categoryId = this.getAttribute("data-category-id");
+               
+               fetch(`/get-products/${categoryId}/`)  // Update URL to match Django route
+                   .then(response => response.json())
+                   .then(data => {
+                       const productsContainer = document.getElementById("products-container");
+                       productsContainer.innerHTML = ""; // Clear previous products
+                       
+                       if (data.products.length > 0) {
+                           data.products.forEach(product => {
+                               const productHTML = `
+                                   <div class="col-md-4 mb-4">
+                                       <div class="card card-product">
+                                           <div class="card-body text-center py-8">
+                                               <img src="${product.image_url}" alt="${product.name}" class="mb-3 img-fluid product-image" />
+                                               <div class="text-truncate">${product.name}</div>
+                                               <div class="text-muted">${product.price}</div>
+                                           </div>
+                                       </div>
+                                   </div>`;
+                               productsContainer.innerHTML += productHTML;
+                           });
+                       } else {
+                           productsContainer.innerHTML = "<p class='text-center'>No products found in this category.</p>";
+                       }
+                   });
+           });
+       });
+   });
+</script>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'libs/simplebar/dist/simplebar.min.js' %}"></script>
+<script src="{% static 'js/slideup.js' %}"></script>
+<script src="{% static 'js/theme.min.js' %}"></script>
+<script src="{% static 'js/messages.js' %}"></script>
+<script src="{% static 'js/vendors/jquery.min.js' %}"></script>
+<script src="{% static 'js/vendors/countdown.js' %}"></script>
+<script src="{% static 'libs/slick-carousel/slick/slick.min.js' %}"></script>
+<script src="{% static 'js/vendors/slick-slider.js' %}"></script>
+<script src="{% static 'libs/tiny-slider/dist/min/tiny-slider.js' %}"></script>
+<script src="{% static 'js/vendors/tns-slider.js' %}"></script>
+<script src="{% static 'js/vendors/zoom.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.js"></script>
+{% endblock %}      

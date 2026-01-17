@@ -1,0 +1,13 @@
+{% load static %}
+{% block title %}
+   <title>E-Kubo: Update shop info</title>
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+<form class="slide-up" method="post" enctype="multipart/form-data" style="font-family: 'Arial', sans-serif;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="font-family: 'Arial', sans-serif;">Update</button>
+</form>
+<script src="{% static 'js/slideup.js' %}"></script>
+
+
