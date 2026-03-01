@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Portfolio - Jayson</title>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+	<!-- Favicon and touch icon (uses logo in assets) -->
+	<link rel="icon" href="../assets/images/portfolio-logo.png" type="image/png" sizes="32x32">
+	<link rel="apple-touch-icon" href="../assets/images/portfolio-logo.png">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		:root{
+			/* New interactive theme */
+			--prussian-blue: #0b132bff;
+			--space-indigo: #1c2541ff;
+			--dusk-blue: #3a506bff;
+			--tropical-teal: #5bc0beff;
+			--neon-ice: #6fffe9ff;
+			--bg1: var(--prussian-blue);
+			--bg2: var(--space-indigo);
+			--accent: var(--neon-ice);
+			--muted: #9fb3c2;
+			--card: var(--dusk-blue);
+		}
+		*{box-sizing:border-box}
+		html,body{height:100%;}
+		body{
+			margin:0;
+			font-family:'Roboto',system-ui,Arial,Helvetica,sans-serif;
+			font-size:16px;
+			background:radial-gradient(circle at 10% 10%, rgba(111,255,233,0.06), transparent 10%), linear-gradient(180deg,var(--bg2),var(--bg1));
+			color:#fff;
+			-webkit-font-smoothing:antialiased;
+			-moz-osx-font-smoothing:grayscale;
+			display:flex;
+			flex-direction:column;
+			min-height:100vh;
+		}
+
+		main{flex:1}
+		.logo img{height:36px;width:auto;display:block}
+		/* Top navigation */
+		.topbar{
+			display:flex;
+			align-items:center;
+			justify-content:space-between;
+			padding:12px 24px;
+			border-bottom:1px solid rgba(255,255,255,0.03);
+			position:sticky;
+			top:0;
+			z-index:1100;
+			backdrop-filter:blur(6px) saturate(120%);
+			background:linear-gradient(180deg, rgba(6,10,18,0.45), rgba(6,10,18,0.35));
+			transition:backdrop-filter 220ms, background 220ms;
+		}
+		.logo{font-weight:800;color:var(--accent);font-size:20px}
+		nav ul{list-style:none;margin:0;padding:0;display:flex;gap:22px}
+		nav a{color:rgba(255,255,255,0.65);text-decoration:none;font-weight:500}
+		nav a.active{color:var(--accent)}
+
+		/* Hero */
+		.hero{
+			max-width:1230px;
+			margin:30px auto;
+			/* extra right padding so large profile container and orbit aren't visually clipped */
+			padding:40px 80px 40px 40px;
+			overflow:visible;
+			display:flex;
+			gap:40px;
+			align-items:center;
+		}
+		.hero-left{flex:1;min-width:400px}
+		.hero-right{width:420px;display:flex;justify-content:center;align-items:center;overflow:visible}
+
+		/* Headings: consistent scale using Roboto */
+		h1{font-size:36px;margin:0 0 10px 0;line-height:1.08;font-weight:700}
+		h2{font-size:22px;margin:0 0 16px 0;color:var(--accent);font-weight:700}
+		h3{font-size:20px;margin:0 0 12px 0;font-weight:600}
+		h4{font-size:18px;margin:0 0 10px 0;font-weight:600}
+		p.lead{color:var(--muted);max-width:520px;font-size:16px;line-height:1.6}
+
+		.meta{display:flex;gap:28px;margin:18px 0;color:var(--muted);font-size:14px}
+		.buttons{display:flex;gap:14px;margin-top:18px}
+		.btn{padding:12px 18px;border-radius:8px;border:2px solid rgba(255,255,255,0.06);background:transparent;color:var(--accent);font-weight:700;cursor:pointer}
+		.btn-primary{background:linear-gradient(90deg,var(--accent),#7ff2e8);color:#061016;border:none;box-shadow:0 6px 18px rgba(8,240,230,0.08)}
+
+		.socials{display:flex;gap:12px;margin-top:20px}
+		.social{width:44px;height:44px;border-radius:8px;border:2px solid rgba(255,255,255,0.06);display:inline-flex;align-items:center;justify-content:center;color:var(--accent);background:transparent}
+		.social svg{width:18px;height:18px;display:block;fill:currentColor}
+
+		/* right profile composition */
+		/* outer container that holds the profile — make this green */
+		.profile-container{position:relative;width:480px;height:480px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 25%, rgba(91,192,190,0.95), rgba(91,192,190,0.65)), linear-gradient(180deg,var(--dusk-blue),rgba(27,38,65,0.06));box-shadow:0 14px 36px rgba(9,30,52,0.12), 0 0 0 6px rgba(91,192,190,0.03), 0 8px 24px rgba(91,192,190,0.06);overflow:visible;transform:translateZ(0);-webkit-transform:translateZ(0);-webkit-backface-visibility:hidden;will-change:transform;background-clip:padding-box;transition:transform 320ms cubic-bezier(.2,.9,.2,1),box-shadow 320ms;margin-right:48px}
+		.profile-container::after{content:"";position:absolute;inset:18px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02)}
+
+		/* inner profile — transparent background */
+		.profile{position:relative;width:500px;height:520px; padding:0px ;border-radius:50%;overflow:hidden;background:transparent;display:flex;align-items:center;justify-content:center;transform:translateY(-28px);z-index:3;transition:transform 360ms}
+		.profile img{width:100%;height:700px;object-fit:cover;border-radius:50%;display:block;transition:transform 360ms, box-shadow 320ms}
+
+		/* SVG orbit: pixel-perfect circular edge animation */
+		/* Overlay SVG orbit: two rotors (core + trailing shadow) using transforms only */
+		.orbit-overlay{position:absolute;inset:0;pointer-events:none;display:block;overflow:visible;z-index:4}
+		.orbit-overlay svg{width:100%;height:100%;display:block;overflow:visible}
+		/* core and trail groups rotate around SVG center (100,100) */
+		.orbit-overlay .core-g,
+		.orbit-overlay .trail-1-g,
+		.orbit-overlay .trail-2-g,
+		.orbit-overlay .trail-3-g{transform-origin:100px 100px}
+		/* Use a consistent duration for core and all trails so speed is uniform; use small negative delays to stagger trailing positions */
+		:root{--orbit-duration:6.6s}
+		/* run orbit animations in reverse so dots move left (counter-clockwise) */
+		.orbit-overlay .core-g{animation:spin-core var(--orbit-duration) linear infinite;animation-direction:reverse}
+		.orbit-overlay .trail-1-g{animation:spin-trail var(--orbit-duration) linear infinite;animation-delay:0s;animation-direction:reverse}
+		.orbit-overlay .trail-2-g{animation:spin-trail var(--orbit-duration) linear infinite;animation-delay:-0.15s;animation-direction:reverse}
+		.orbit-overlay .trail-3-g{animation:spin-trail var(--orbit-duration) linear infinite;animation-delay:-0.30s;animation-direction:reverse}
+		/* rotor-2 starts halfway through the core animation to guarantee 180deg opposition; apply same small offsets to its trails */
+		.orbit-overlay .rotor-2 .core-g{animation-delay:calc(var(--orbit-duration) / -2)}
+		.orbit-overlay .rotor-2 .trail-1-g{animation-delay:calc(var(--orbit-duration) / -2 - 0s)}
+		.orbit-overlay .rotor-2 .trail-2-g{animation-delay:calc(var(--orbit-duration) / -2 - 0.15s)}
+		.orbit-overlay .rotor-2 .trail-3-g{animation-delay:calc(var(--orbit-duration) / -2 - 0.30s)}
+		/* visual styles: smaller core, three subtle trail layers (all slightly smaller than core) */
+		/* match hero background color so orbit dots blend with page background */
+		.orbit-overlay .dot-core{fill:var(--bg1);filter:none;}
+		.orbit-overlay .dot-trail-1{fill:var(--bg1);opacity:0.28;filter:url(#blur-soft)}
+		.orbit-overlay .dot-trail-2{fill:var(--bg1);opacity:0.18;filter:url(#blur-soft)}
+		.orbit-overlay .dot-trail-3{fill:var(--bg1);opacity:0.12;filter:url(#blur-soft)}
+		.profile-container:focus-visible .orbit-overlay .dot-trail-1{opacity:0.38}
+
+		@keyframes spin-core{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+		@keyframes spin-trail{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+		/* keep focus-visible interactions for keyboard users; remove mouse hover rules */
+		.profile-container:focus-visible{transform:scale(1.02) translateZ(0);box-shadow:0 24px 60px rgba(9,30,52,0.14);outline:none}
+		.profile-container:focus-visible .profile{transform:translateY(-34px)}
+		/* speed up core rotation for focus-visible (keyboard) only */
+		.profile-container:focus-visible .orbit-overlay .core-g{animation-duration:3.2s}
+		/* slightly increase trail visibility when focused (keyboard) */
+		.profile-container:focus-visible .orbit-overlay .dot-trail-1{opacity:0.34}
+		.profile-container:active{transform:scale(0.995)}
+
+		@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+		@keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+		/* small screen */
+		@media (max-width:900px){
+			.hero{flex-direction:column-reverse;padding:20px}
+			.hero-right{width:100%;}
+			.profile-container{width:300px;height:300px}
+			.profile{width:160px;height:180px;transform:translateY(-18px)}
+			.profile img{width:100%;height:100%}
+			h1{font-size:28px}
+			h2{font-size:20px}
+		}
+
+		/* Sections and cards */
+		.section{max-width:1150px;margin:40px auto;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+		.about-inner{display:flex;gap:24px;align-items:flex-start}
+		.about-text{flex:1}
+		/* Justify paragraphs inside the About section only */
+		.about-text p{text-align:justify;text-justify:inter-word;-webkit-hyphens:auto;hyphens:auto;word-break:break-word}
+		/* spacing between About and Skills (keeps interior layout unchanged) */
+		#skills{margin-top:28px}
+		@media (max-width:900px){
+			#skills{margin-top:16px}
+		}
+		.about-stats{width:260px;display:flex;flex-direction:column;gap:12px}
+		.stat{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px}
+		.skills-grid{display:flex;gap:16px;flex-wrap:wrap}
+		.skill{width:100%;max-width:320px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+		.progress{height:8px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-top:8px}
+		.progress > span{display:block;height:100%;background:var(--accent)}
+
+		/* Animated skill progress (used in About section) - GPU accelerated via transform */
+		.skills-panel{width:320px}
+		.skill-progress{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+		.skill-progress strong{width:120px;font-size:14px;color:#fff}
+		.skill-progress .progress{flex:1;background:rgba(255,255,255,0.04);height:12px;border-radius:999px;overflow:hidden;position:relative}
+		.skill-progress .progress .progress-bar{height:100%;width:100%;background:linear-gradient(90deg,var(--accent),#7ff2e8);border-radius:999px;transform-origin:left center;transform:scaleX(0);transition:transform var(--duration,1.2s) cubic-bezier(.2,.9,.2,1)}
+		.skill-progress .percent{width:40px;text-align:right;color:var(--muted);font-size:13px}
+		/* staggered transition delays (use small offsets) */
+		.skill-progress[data-delay="0"] .progress .progress-bar{transition-delay:0s}
+		.skill-progress[data-delay="1"] .progress .progress-bar{transition-delay:0.12s}
+		.skill-progress[data-delay="2"] .progress .progress-bar{transition-delay:0.24s}
+		.skill-progress[data-delay="3"] .progress .progress-bar{transition-delay:0.36s}
+		/* when the panel becomes visible apply scale based on numeric --value (0-100) */
+		.skill-progress.in-view .progress .progress-bar{transform:scaleX(calc(var(--value) / 100))}
+		.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+		.card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+		.card img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+		.contact-form{max-width:700px;display:flex;flex-direction:column;gap:12px}
+		.input, textarea{padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+		@media (max-width:900px){
+			.about-inner{flex-direction:column}
+			.portfolio-grid{grid-template-columns:repeat(1,1fr)}+
+		} 
+
+		/* typing cursor */
+		.typed-cursor{display:inline-block;margin-left:8px;vertical-align:bottom;color:var(--accent);animation:blink 1s steps(1) infinite}
+		.typed-cursor::before{content:'|'}
+		@keyframes blink{50%{opacity:0}}
+
+		.carousel{position:relative;margin:12px auto 0;overflow:visible;display:flex;justify-content:center;align-items:center}
+		.carousel-viewport{overflow:hidden;width:100%;display:block}
+		.carousel-track{display:flex;align-items:center;gap:24px;transition:transform 600ms cubic-bezier(.2,.9,.2,1);will-change:transform;transform:translateZ(0)}
+		.carousel .card{flex:0 0 auto;width:320px;transition:transform 600ms cubic-bezier(.2,.9,.2,1),opacity 600ms cubic-bezier(.2,.9,.2,1);will-change:transform,opacity;opacity:0.8}
+		/* center scale uses CSS vars set from JS to avoid layout reflow; defaults approximate +40px/+50px */
+		.carousel{--center-scale-x:1.125;--center-scale-y:1.3125}
+		.carousel .card.active{transform:scale(var(--center-scale-x), var(--center-scale-y));opacity:1;z-index:4;box-shadow:0 18px 40px rgba(2,8,20,0.45)}
+		.carousel .card.prev,.carousel .card.next{transform:scale(0.88);opacity:0.82;z-index:3}
+		.carousel .card:not(.active):not(.prev):not(.next){opacity:0.55;transform:scale(0.85);z-index:1;pointer-events:none}
+		.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.04);color:var(--accent);width:44px;height:44px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;z-index:6}
+		.carousel-btn:focus{outline:2px solid rgba(111,255,233,0.14)}
+		.carousel-btn.prev{left:6px}
+		.carousel-btn.next{right:6px}
+		/* Mobile: show single centered card */
+		@media (max-width:900px){
+			.carousel .card{width:86%;max-width:420px}
+			.carousel .card.prev,.carousel .card.next{opacity:0;transform:scale(0.92);pointer-events:none}
+		}
+
+
+		#portfolio{min-height:500px;padding-top:48px;padding-bottom:20px}
+		@media (max-width:900px){
+			#portfolio{min-height:400px;padding-top:28px;padding-bottom:10px}
+		}
+
+
+		:root{--portfolio-overlay:120px}
+		#portfolio{position:relative;z-index:20;margin-bottom:calc(var(--portfolio-overlay) * -1)}
+		#contact{position:relative;z-index:0;padding-top:calc(var(--portfolio-overlay) + 20px);padding-bottom:20px}
+		/* ensure the overlayed area casts a subtle separation shadow */
+		/* remove decorative pseudo-element that created an extra white/rounded band */
+		#portfolio::after{display:none !important}
+		@media (max-width:900px){
+			:root{--portfolio-overlay:64px}
+			#portfolio{margin-bottom:calc(var(--portfolio-overlay) * -1)}
+			#contact{padding-top:calc(var(--portfolio-overlay) + 16px);padding-bottom:16px}
+		} 
+
+
+		#contact.section{background:transparent !important;border:none !important;box-shadow:none !important}
+		/* make the contact form visibly distinct while still subtle */
+		#contact .contact-form{background:rgba(255,255,255,0.03);padding:20px;border-radius:12px;margin-top:8px;box-shadow:0 10px 30px rgba(2,8,20,0.12)}
+		/* Position contact form from center to the right (left edge at center). Button centered under form. */
+		#contact .contact-form{width:50%;margin-left:50%;display:flex;flex-direction:column;gap:12px}
+		/* center the H3 so it aligns with the form (desktop = right-half, mobile = full-width) */
+		#contact h4{width:50%;margin-left:50%;text-align:center;margin-bottom:12px;transform:translateY(12px);opacity:0;transition:transform 480ms cubic-bezier(.2,.9,.2,1),opacity 480ms}
+		/* inputs: subtle background and stronger border so fields are visible */
+		#contact .contact-form .input,#contact .contact-form textarea{width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.10);padding:12px;color:#fff;transform:translateY(16px);opacity:0;transition:transform 480ms cubic-bezier(.2,.9,.2,1),opacity 420ms}
+		#contact .contact-form .btn{align-self:center;transform:translateY(12px);opacity:0;transition:transform 480ms cubic-bezier(.2,.9,.2,1),opacity 420ms}
+		/* Mobile: full width and centered */
+		@media (max-width:900px){
+			#contact .contact-form{width:100%;margin-left:0;padding:0 16px}
+			#contact .contact-form .btn{align-self:center}
+			#contact h4{width:100%;margin-left:0}
+		}
+		/* hide default outlines visually (mouse/touch), but preserve accessibility via :focus-visible */
+		#contact :focus{outline:none!important;box-shadow:none!important}
+		#contact :focus-visible{outline:2px solid rgba(111,255,233,0.14);outline-offset:2px}
+		/* when in-view, reveal form elements (stagger applied by JS) */
+		#contact.in-view h4{transform:translateY(0);opacity:1}
+		#contact.in-view .contact-form .input,#contact.in-view .contact-form textarea{transform:translateY(0);opacity:1}
+		#contact.in-view .contact-form .btn{transform:translateY(0);opacity:1}
+
+		/* Neon edge glow for About section: SVG overlay traces rounded rectangle border only */
+		#about{position:relative;z-index:1}
+		.about-glow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+		/* tune visual intensity */
+		/* Thinner neon stroke to match section border; keep rounded caps */
+		.about-glow .glow-path{stroke-width:1;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow-filter);opacity:0.92}
+		/* subtle base stroke to give depth */
+		.about-glow .glow-base{stroke-width:1;stroke:rgba(255, 255, 255, 0.18);stroke-linejoin:round}
+		/* animated dash movement - infinite loop */
+		/* Use exact perimeter value for the rect (2*(width+height)=1976) so the dash loops smoothly without pauses */
+		.about-glow .glow-path{stroke-dasharray:1976;stroke-dashoffset:0;animation:dash-scroll 9s linear infinite}
+		@keyframes dash-scroll{from{stroke-dashoffset:0}to{stroke-dashoffset:-1976}}
+
+		/* reduce GPU/paint cost by isolating filter region */
+		.about-glow svg{will-change:transform,opacity}
+	</style>
+</head>
+<body>
+	<header class="topbar">
+		<div class="logo"><img src="../assets/images/portfolio-logo.png" alt="Portfolio logo"></div>
+		<nav>
+			<ul>
+				<li><a class="active" href="#">Home</a></li>
+				<li><a href="#about">About</a></li>
+				<li><a href="#skills">Skills</a></li>
+				<li><a href="#portfolio">Projects</a></li>
+				<li><a href="#contact">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+        <!-- Hero Section -->
+		<section class="hero" aria-label="Intro">
+			<div class="hero-left">
+				<h1>Hi! I'm Jayson Pardilla</h1>
+					<h2>And I'm <span id="role" style="color:var(--accent)"><span id="typed"></span><span class="typed-cursor" aria-hidden="true"></span></span></h2>
+                <p class="lead">
+                I build practical and secure software systems focused on performance, scalability, 
+                and real-world problem solving. Experienced in backend development with Django, 
+                API integration, and creating responsive web applications.
+                </p>
+				<div class="meta">
+					<div>
+						<strong style="display:block;color:#fff">Email:</strong>
+						<span style="color:var(--muted)">jaysonpardilla278@gmail.com</span>
+					</div>
+				</div>
+
+				<div class="buttons">
+					<button class="btn btn-primary">Download CV</button>
+					<button class="btn" id="hire-btn">Hire Me Now!</button>
+				</div>
+
+				<div class="socials" aria-hidden="true">
+					<a class="social" href="https://web.facebook.com/pardilla.jayson.5/" target="_blank" rel="noopener" aria-label="Facebook">
+						<!-- Facebook SVG -->
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 12.07C22 6.48 17.52 2 11.93 2S2 6.48 2 12.07c0 4.99 3.66 9.12 8.44 9.93v-7.03H8.08v-2.9h2.36V9.41c0-2.33 1.39-3.62 3.52-3.62.99 0 2.03.18 2.03.18v2.23h-1.14c-1.13 0-1.48.7-1.48 1.42v1.7h2.52l-.4 2.9h-2.12v7.03C18.34 21.19 22 17.06 22 12.07z"/></svg>
+					</a>
+					<a class="social" href="https://www.instagram.com/docsonjii?igsh=YXo0N2k1djg0NnB1" target="_blank" rel="noopener" aria-label="Instagram">
+						<!-- Instagram SVG -->
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.9A4.1 4.1 0 1 0 16.1 12 4.1 4.1 0 0 0 12 7.9zm6.4-.9a1.2 1.2 0 1 0 1.2 1.2 1.2 1.2 0 0 0-1.2-1.2zM12 9.4A2.6 2.6 0 1 1 9.4 12 2.6 2.6 0 0 1 12 9.4z"/></svg>
+					</a>
+					<a class="social" href="https://github.com/jaysonpardilla" target="_blank" rel="noopener" aria-label="GitHub">
+						<!-- GitHub SVG -->
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 .5A12 12 0 0 0 0 12.5c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.2.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1.7 1.6 2.9 2.2.1-.8.4-1.4.8-1.7-2.6-.3-5.3-1.3-5.3-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0C17.6 6 18.6 6.3 18.6 6.3c.6 1.7.2 3 .1 3.3.8.8 1.2 1.9 1.2 3.2 0 4.7-2.7 5.6-5.3 5.9.4.4.7 1 .7 2v3c0 .4.2.7.8.6A12 12 0 0 0 24 12.5 12 12 0 0 0 12 .5z"/></svg>
+					</a>
+				</div>
+			</div>
+
+			<div class="hero-right">
+				<div class="profile-container" tabindex="0" role="group" aria-label="Profile composition">
+					<!-- Orbit overlay: two orbiting circles with trailing shadows -->
+					<div class="orbit-overlay" aria-hidden="true">
+						<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+							<!-- soft blur filter for trail -->
+							<defs>
+								<filter id="blur-soft" x="-50%" y="-50%" width="200%" height="200%">
+									<feGaussianBlur stdDeviation="2" result="b" />
+									<feBlend in="SourceGraphic" in2="b" mode="normal" />
+								</filter>
+							</defs>
+							<!-- Rotor 1: starts at TOP center. Use cy=6 to align dots on the visual border -->
+							<g class="rotor rotor-1">
+								<g class="trail-1-g">
+									<circle class="dot-trail-1" cx="100" cy="6" r="4" />
+								</g>
+								<g class="trail-2-g">
+									<circle class="dot-trail-2" cx="100" cy="6" r="3" />
+								</g>
+								<g class="trail-3-g">
+									<circle class="dot-trail-3" cx="100" cy="6" r="2" />
+								</g>
+								<g class="core-g">
+									<circle class="dot-core" cx="100" cy="6" r="4" />
+								</g>
+							</g>
+							<!-- Rotor 2: same geometry but starts 180deg offset via animation-delay in CSS -->
+							<g class="rotor rotor-2">
+								<g class="trail-1-g">
+									<circle class="dot-trail-1" cx="100" cy="6" r="4" />
+								</g>
+								<g class="trail-2-g">
+									<circle class="dot-trail-2" cx="100" cy="6" r="3" />
+								</g>
+								<g class="trail-3-g">
+									<circle class="dot-trail-3" cx="100" cy="6" r="2" />
+								</g>
+								<g class="core-g">
+									<circle class="dot-core" cx="100" cy="6" r="4" />
+								</g>
+							</g>
+						</svg>
+					</div>
+
+					<div class="profile">
+						<img src="../assets/images/jayson.png" alt="Profile picture of Jayson Pardilla" />
+					</div>
+				</div>
+			</div>
+            <br>
+            <hr class="divider" style="border:solid ;border-top:1px solid rgba(255, 255, 255, 0.7);margin:40px 0" />
+		</section> 
+        <!-- End hero Section--> 
+
+		<!-- About Section -->
+		<section id="about" class="section" aria-label="About me">
+			<!-- SVG overlay: neon tracing the rounded border only (pointer-events:none) -->
+			<svg class="about-glow" viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+				<defs>
+					<!-- soft bloom -->
+					<filter id="glow-filter" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
+						<!-- reduced blur for a slimmer neon line -->
+						<feGaussianBlur stdDeviation="4" result="b" />
+						<feMerge>
+							<feMergeNode in="b" />
+							<feMergeNode in="SourceGraphic" />
+						</feMerge>
+					</filter>
+					<!-- neon gradient along stroke -->
+					<linearGradient id="neon-grad" x1="0%" x2="100%" y1="0%" y2="0%">
+						<stop offset="0%" stop-color="rgba(111,255,233,0.95)"/>
+						<stop offset="50%" stop-color="rgba(91,192,190,0.95)"/>
+						<stop offset="100%" stop-color="rgba(111,255,233,0.95)"/>
+					</linearGradient>
+					<!-- mask to remove interior stroke so glow does not cover content -->
+					<mask id="ring-mask">
+						<rect x="0" y="0" width="600" height="400" fill="white" />
+						<!-- inner rect cutout: adjusted inset to match thinner stroke so interior stays clean -->
+						<rect x="6" y="6" width="588" height="388" rx="12" ry="12" fill="black" />
+					</mask>
+				</defs>
+				<!-- base subtle border for depth -->
+				<rect x="3" y="3" width="594" height="394" rx="12" ry="12" fill="none" class="glow-base" />
+				<!-- animated neon stroke; mask limits it to border ring only -->
+				<rect x="3" y="3" width="594" height="394" rx="12" ry="12" fill="none" stroke="url(#neon-grad)" class="glow-path" mask="url(#ring-mask)" />
+			</svg>
+			<div class="about-inner">
+				<div class="about-text mt-4">
+					<h4 class="mb-3">About Me</h3>
+					<p>I am a software developer focused on building performant, secure, and maintainable web applications. I enjoy solving problems with clean architecture and shipping features that people rely on.</p>
+					<p>When I'm not coding I like to sketch interfaces and explore new design systems.</p>
+				</div>
+				<section id="skills" aria-label="Skills" style="padding-left:110px">
+					<aside class="skills-panel mt-0" aria-label="Skills and proficiency">
+					<h4 class="mb-3">Skills</h4>
+					<div class="skill-progress" data-delay="0" style="--value:80;--duration:1.2s">
+						<strong>Django / Python</strong>
+						<div class="progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+							<div class="progress-bar"></div>
+						</div>
+						<span class="percent">80%</span>
+					</div>
+					<div class="skill-progress" data-delay="1" style="--value:70;--duration:1.2s">
+						<strong>HTML / CSS</strong>
+						<div class="progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">
+							<div class="progress-bar"></div>
+						</div>
+						<span class="percent">70%</span>
+					</div>
+					<div class="skill-progress" data-delay="2" style="--value:50;--duration:1.2s">
+						<strong>React</strong>
+						<div class="progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+							<div class="progress-bar"></div>
+						</div>
+						<span class="percent">50%</span>
+					</div>
+					<div class="skill-progress" data-delay="3" style="--value:80;--duration:1.2s">
+						<strong>REST API</strong>
+						<div class="progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+							<div class="progress-bar"></div>
+						</div>
+						<span class="percent">80%</span>
+					</div>
+					</aside>
+				</section>
+			</div>
+		</section>
+		<!-- End about Section--> 
+
+		<!-- Portfolio Section -->
+		<section id="portfolio" class="section p-2" aria-label="Portfolio">
+			<h4 class="p-3 mb-3">Selected Projects</h4>
+			<div class="carousel p-3" aria-roledescription="carousel" aria-label="Projects carousel" tabindex="0">
+				<button class="carousel-btn prev" aria-label="Previous project">‹</button>
+				<div class="carousel-viewport p-5">
+					<div class="carousel-track">
+						<article class="card">
+							<img src="https://images.unsplash.com/photo-1521747116042-5a810fda9664?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcd" alt="Project screenshot">
+							<h4>Project One</h4>
+							<p style="color:var(--muted)">A short description of the project and technologies used.</p>
+						</article>
+						<article class="card">
+							<img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcd" alt="Project screenshot">
+							<h4>Project Two</h4>
+							<p style="color:var(--muted)">A short description of the project and technologies used.</p>
+						</article>
+						<article class="card">
+							<img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcd" alt="Project screenshot">
+							<h4>Project Three</h4>
+							<p style="color:var(--muted)">A short description of the project and technologies used.</p>
+						</article> 
+						<article class="card">
+							<img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcd" alt="Project screenshot">
+							<h4>Project four</h4>
+							<p style="color:var(--muted)">A short description of the project and technologies used.</p>
+						</article>
+						<article class="card">
+							<img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcd" alt="Project screenshot">
+							<h4>Project fove</h4>
+							<p style="color:var(--muted)">A short description of the project and technologies used.</p>
+						</article>
+					</div> 
+				</div>
+				<button class="carousel-btn next" aria-label="Next project">›</button>
+			</div>
+		</section>
+		<!-- End Portfolio Section --> 
+
+		<!-- Contact Section -->
+		<section id="contact" class="section" aria-label="Contact me" style="padding:0; padding-top:120px"> 
+			<div class="mt-0" style="align-items:right;display:flex;flex-direction:column;gap:15px">
+				<h4 class="mt-1">Contact Me</h4>
+				<form class="contact-form" action="#" method="post">
+					<input class="input" type="text" name="name" placeholder="Your name" required />
+					<input class="input" type="email" name="email" placeholder="Your email" required />
+					<textarea class="input" name="message" rows="6" placeholder="Message" required></textarea>
+					<div>
+						<button class="btn btn-primary" type="submit">Send Message</button>
+					</div>
+				</form>
+			</div>
+		</section>
+		<!-- End Contact Section --> 
+
+		<footer class="bg-dark m-0 p-3" style="margin:0%">
+			<p style='align-items:center; justify-content:center; display:flex'>© 2026 Jayson Pardilla. All Rights Reserved.</p>
+		</footer>
+
+	</main> 
+
+	<script>
+	// Typing animation for hero role
+	document.addEventListener('DOMContentLoaded', function(){
+		const words = ['Web Developer','Mobile Developer'];
+		const typedEl = document.getElementById('typed');
+		let wIndex = 0, charIndex = 0;
+		const typingSpeed = 80; // ms per char
+		const deletingSpeed = 40;
+		const holdDelay = 5000; // hold full word (ms)
+
+		function type(){
+			const word = words[wIndex];
+			if(charIndex < word.length){
+				typedEl.textContent += word.charAt(charIndex);
+				charIndex++;
+				setTimeout(type, typingSpeed);
+			}else{
+				// word complete, hold then delete
+				setTimeout(deleteWord, holdDelay);
+			}
+		}
+
+		function deleteWord(){
+			if(charIndex > 0){
+				typedEl.textContent = typedEl.textContent.slice(0, -1);
+				charIndex--;
+				setTimeout(deleteWord, deletingSpeed);
+			}else{
+				wIndex = (wIndex + 1) % words.length;
+				setTimeout(type, typingSpeed);
+			}
+		}
+
+		// start typing
+		type();
+	});
+	</script>
+
+	<script src="../static/js/skill-progressbar.js"></script>
+	<script src="../static/js/ndex.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+	// back-to-top button show/hide and smooth scroll
+	(function(){
+		const btn = document.querySelector('.back-to-top');
+		if(!btn) return;
+		function onScroll(){
+			if(window.scrollY > 300) btn.classList.add('show'); else btn.classList.remove('show');
+		}
+		window.addEventListener('scroll', onScroll, {passive:true});
+		btn.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+		// initial check
+		onScroll();
+	})();
+	</script>
+
+	<script>
+	// Hire button: scroll to contact with header offset (accounts for sticky topbar)
+	(function(){
+		const btn = document.getElementById('hire-btn');
+		const contact = document.getElementById('contact');
+		const topbar = document.querySelector('.topbar');
+		if(!btn || !contact) return;
+		btn.addEventListener('click', function(e){
+			e.preventDefault();
+			const headerH = topbar ? topbar.getBoundingClientRect().height : 0;
+			const targetY = contact.getBoundingClientRect().top + window.pageYOffset - headerH - 12;
+			window.scrollTo({top: Math.max(0, Math.floor(targetY)), behavior: 'smooth'});
+		});
+	})();
+</script>
+
+<script>
+// Contact section entrance observer + staggered reveal for inputs
+(function(){
+	const contact = document.getElementById('contact');
+	if(!contact) return;
+
+	const formEls = Array.from(contact.querySelectorAll('.contact-form .input, .contact-form textarea'));
+	const submitBtn = contact.querySelector('.contact-form .btn');
+
+	const observer = new IntersectionObserver((entries, obs)=>{
+		entries.forEach(entry=>{
+			if(!entry.isIntersecting) return;
+			contact.classList.add('in-view');
+			// stagger delays for inputs
+			formEls.forEach((el, i)=>{
+				el.style.transitionDelay = (i * 0.09) + 's';
+			});
+			if(submitBtn) submitBtn.style.transitionDelay = (formEls.length * 0.09) + 's';
+			obs.unobserve(contact);
+		});
+	},{threshold:0.12});
+
+	// make sure inputs are rendered with their initial hidden state
+	formEls.forEach(el=>{ el.style.willChange = 'transform,opacity'; });
+	if(submitBtn) submitBtn.style.willChange = 'transform,opacity';
+
+	// small delay to avoid firing during initial page load jank
+	requestAnimationFrame(()=> observer.observe(contact));
+})();
+</script>
+</body>
+</html>
+
